@@ -1,0 +1,68 @@
+# Random gold set: YES clips from 60 cuts drawn at random (seed 11) from all 179 distinct moments
+# of the rules-only run, not from the tool's ranking or shortlist. Labels are AI-drafted from transcripts.
+# Grade with --covered set to the episodes these 60 clips come from (see eval/random_episodes.txt).
+- id: X03
+  episode: 2
+  start: 0.0
+  end: 37.2
+  why: Groom rejects her to her face at once; ends on her begging her father.
+- id: X06
+  episode: 3
+  start: 96.5
+  end: 145.75
+  why: Stranger kneels and proposes in front of everyone; ends before her answer.
+- id: X08
+  episode: 5
+  start: 15.8
+  end: 66.5
+  why: Disowned, then her mother's book is thrown in the mud; ends on her knees.
+- id: X11
+  episode: 7
+  start: 24.5
+  end: 74.0
+  why: Threat to make her husband disappear; ends as the husband walks up.
+- id: X17
+  episode: 11
+  start: 58.0
+  end: 112.75
+  why: Search of the home ends with the planted watch found.
+- id: X30
+  episode: 24
+  start: 12.2
+  end: 32.8
+  why: Caught helping a sick woman and struck with a riding crop as the clip ends.
+- id: X33
+  episode: 26
+  start: 55.8
+  end: 95.0
+  why: Poison confirmed, then the old woman sees the ring and freezes.
+- id: X34
+  episode: 27
+  start: 34.9
+  end: 73.8
+  why: A lost son's ring is recognised, then the doors burst open.
+- id: X36
+  episode: 28
+  start: 82.3
+  end: 138.5
+  why: Identity exposed, mocked, sent to the cells, gallows threatened.
+- id: X43
+  episode: 33
+  start: 104.2
+  end: 140.5
+  why: A lord forces a maid to call healing witchcraft and testify.
+- id: X44
+  episode: 34
+  start: 0.0
+  end: 42.5
+  why: Accused of witchcraft in the first second.
+- id: X49
+  episode: 38
+  start: 60.5
+  end: 87.91
+  why: Wedding bells mean her execution is next; she whispers her husband's name.
+- id: X59
+  episode: 46
+  start: 96.8
+  end: 143.88
+  why: Ten days to save the marriage; villain whispers that is enough time.
