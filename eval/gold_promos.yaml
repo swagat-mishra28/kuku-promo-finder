@@ -1,0 +1,159 @@
+# Gold set: promos worth posting, across all 50 episodes.
+# labels may be changed if needed
+#
+# Each entry: one continuous stretch (episode, start, end in seconds) + why.
+- id: G01
+  episode: 1
+  start: 14.3
+  end: 46.8
+  why: Bride finds her groom marrying her sister at the altar.
+- id: G02
+  episode: 2
+  start: 0.0
+  end: 37.2
+  why: Groom rejects her to her face; she begs her father to step in.
+- id: G03
+  episode: 3
+  start: 45.9
+  end: 81.0
+  why: Guards drag her from the church; a stranger steps in.
+- id: G04
+  episode: 3
+  start: 96.5
+  end: 145.75
+  why: The stranger kneels and proposes in front of everyone. Episode cliffhanger.
+- id: G05
+  episode: 5
+  start: 15.8
+  end: 66.5
+  why: Disowned, then her mother's book is thrown in the mud.
+- id: G06
+  episode: 7
+  start: 24.5
+  end: 74.0
+  why: Ex-fiance threatens the husband; the husband walks up.
+- id: G07
+  episode: 10
+  start: 55.5
+  end: 94.0
+  why: Romantic tension during wound care, kiss left unresolved.
+- id: G08
+  episode: 11
+  start: 58.0
+  end: 112.75
+  why: Search of the cottage ends with the planted watch found. Episode cliffhanger.
+- id: G09
+  episode: 12
+  start: 43.7
+  end: 87.21
+  why: 'Ultimatum: dig a ring from frozen thorns or the husband hangs.'
+- id: G10
+  episode: 13
+  start: 14.2
+  end: 56.0
+  why: She crawls into the thorns bleeding while they mock her.
+- id: G11
+  episode: 15
+  start: 44.2
+  end: 86.0
+  why: Thugs shove her down; the husband arrives to face them.
+- id: G12
+  episode: 16
+  start: 14.3
+  end: 55.2
+  why: He beats three thugs and forces out who paid them.
+- id: G13
+  episode: 18
+  start: 36.5
+  end: 86.5
+  why: House on fire; she runs back for her mother's book.
+- id: G14
+  episode: 19
+  start: 70.6
+  end: 94.0
+  why: Hidden heir learns his mother is a prisoner and vows to return.
+- id: G15
+  episode: 23
+  start: 84.5
+  end: 131.5
+  why: Secret treatment of the poisoned Duchess; someone opens the door.
+- id: G16
+  episode: 24
+  start: 6.0
+  end: 43.0
+  why: Caught in the sickroom and struck with a riding crop.
+- id: G17
+  episode: 26
+  start: 86.5
+  end: 120.88
+  why: The Duchess recognises the ring and demands where it came from.
+- id: G18
+  episode: 27
+  start: 92.8
+  end: 131.0
+  why: She reports the poisoning and is accused of being the poisoner.
+- id: G19
+  episode: 28
+  start: 82.3
+  end: 138.5
+  why: Identity exposed, sent to the cells, threatened with the gallows.
+- id: G20
+  episode: 31
+  start: 138.0
+  end: 160.0
+  why: Her mother's book about to burn; hot iron stops at her eye.
+- id: G21
+  episode: 32
+  start: 119.5
+  end: 154.38
+  why: She out-talks her torturer, who raises the branding iron.
+- id: G22
+  episode: 33
+  start: 104.2
+  end: 140.5
+  why: A lord coerces a maid into calling healing witchcraft.
+- id: G23
+  episode: 34
+  start: 139.2
+  end: 190.0
+  why: She refuses to renounce healing; the judge is about to sentence her.
+- id: G24
+  episode: 35
+  start: 110.0
+  end: 157.5
+  why: The ambush was ordered by the men now ruling his estate.
+- id: G25
+  episode: 36
+  start: 117.0
+  end: 148.5
+  why: His wife is condemned to die after a wedding.
+- id: G26
+  episode: 38
+  start: 60.5
+  end: 87.91
+  why: Wedding bells ring, meaning her execution is next.
+- id: G27
+  episode: 39
+  start: 61.2
+  end: 98.41
+  why: He drops the disguise and vows to take back his house and wife.
+- id: G28
+  episode: 41
+  start: 57.8
+  end: 96.09
+  why: The church doors explode during the wedding.
+- id: G29
+  episode: 42
+  start: 0.0
+  end: 21.5
+  why: The lost Duke walks through the rubble; called an impostor.
+- id: G30
+  episode: 45
+  start: 86.5
+  end: 121.75
+  why: 'Doors burst open: the marriage is declared invalid.'
+- id: G31
+  episode: 46
+  start: 96.8
+  end: 143.88
+  why: Ten days to save the marriage; the villain says that is enough.

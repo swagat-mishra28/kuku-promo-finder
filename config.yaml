@@ -1,0 +1,50 @@
+# Kuku promo finder config. Everything tunable lives here, not in code.
+
+min_len: 20          # promo length bounds from the brief (seconds)
+max_len: 60
+dedupe_overlap: 0.35 # two picks may share at most 35% of screen time
+shortlist_size: 40   # minimum moments sent to the LLM judge
+shortlist_per_episode: 2.4  # grows with the show: 50 episodes -> 120 judge calls
+top_n: 25            # promos in the final list
+
+scoring:
+  weights: {hook: 0.30, cliff: 0.30, standalone: 0.20, heat: 0.15, length: 0.05}
+  ideal_length: 38            # sweet spot for Reels/TikTok ads
+  finale_bonus: 0.20          # episode endings are written as cliffhangers
+  episode_depth_penalty: 0.006  # later episodes need more backstory
+  cold_open_penalty: 0.03     # two cuts cost more editor time than one
+
+cold_open:
+  enabled: true
+  min_hook_heat: 0.55
+  top_bodies: 80
+  max_gap: 25         # hook must be the payoff the body leads up to
+
+ranking:
+  llm_weight: 0.6             # final = 0.4 * rules + 0.6 * LLM (when an LLM is set)
+  early_episode_bonus: 0.06   # funnel: promos from early episodes send viewers to Ep 1
+  early_episode_cutoff: 10
+  repeat_episode_penalty: 0.05
+
+# Record of tuning attempts (copied into run_meta.json by --rescore-from). Not used for scoring.
+tuning_log:
+  - "2026-11-21: tried ranking.llm_weight 0.6 -> 0.7 on the tune split (odd episodes). Tune recall@5 3->4 and recall@10 6->7; recall@15 and precision@15 unchanged. Test split (even episodes): recall unchanged at every k, precision@15 fell from 5/9 to 5/10. Reverted. No tuning change is active."
+  - "2026-11-21: also tried on tune only, not applied: episode_depth_penalty 0.003 and 0, finale_bonus 0.30, llm_weight 0.5, early_episode_bonus 0.03 and 0, repeat_episode_penalty 0.10, removing delivery words (soft, gentle, tender, warm) from the calm-ending list. None beat the baseline on recall@15."
+
+qa:
+  disagreement_gap: 0.30
+  # With LLM scores, a pick goes to the editor only if: confusing text (below), standalone < min, or disagreement.
+  min_llm_standalone: 5         # LLM standalone_score (0-10) below this flags the pick
+  flag_on_confusing_text: true  # flag when the LLM's confusing_for_new_viewer text is non-empty
+
+# ---- Model: swap here, or with env vars PROMO_LLM_PROVIDER / PROMO_LLM_MODEL ----
+# provider: none | gemini | groq | openrouter | openai | openai_compatible | ollama | anthropic
+llm:
+  provider: none
+  model: openai/gpt-oss-120b
+  api_key_env: PROMO_LLM_API_KEY
+  base_url: ""                # only for openai_compatible / self-hosted endpoints
+  temperature: 0.2
+  reasoning_effort: low       # low | medium | high | "" (unset). Sent only for groq / openai_compatible
+  min_seconds_between_calls: 13 # Groq free tier: ~8k tokens/min at ~1.6k tokens per judge call
+  cache_dir: .cache/llm

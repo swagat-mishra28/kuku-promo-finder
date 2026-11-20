@@ -1,0 +1,22 @@
+# Kuku's input pack is confidential: never commit screenplays or anything quoting them
+data/episodes/*.txt
+outputs/
+.cache/
+.env
+__pycache__/
+*.pyc
+.venv/
+
+# Blind labelling sheet quotes the screenplays
+eval/review_sheet.md
+# Label work files paraphrase or quote the screenplays
+eval/labels_draft.md
+eval/labels_to_review.md
+eval/gold_promos_old_draft.yaml
+eval/reports/
+# Build and deploy leftovers
+raw_outputs_for_drive.zip
+.pytest_cache/
+.streamlit/secrets.toml
+SOLUTION_DOC_DRAFT.md
+
