@@ -63,3 +63,19 @@ Every choice made while finishing the project, with the reason. Newest entries a
 **D25. Freed C: by purging pip's cache.** 3.9 GB of re-downloadable package files. C: went from 1.4 GB to 5.1 GB free. Nothing else on C: was touched.
 
 **D26. Public repo hygiene.** SOLUTION_DOC_DRAFT.md quotes dialogue, so it is git-ignored (SOLUTION_DOC.md replaces it). One screenplay line in PROMPTS.md, used as an example search string, was replaced with a placeholder. A scan of every tracked file against all dialogue lines of five words or more from the 50 screenplays finds no matches, and no key-like strings.
+
+## Round 2, Phase 1: rule fixes (21 Nov 2026, from 05:10 IST, branch round2)
+
+Each fix comes from a failure in FAILURES.md, is switched in config.yaml, and was tested cumulatively on the tune split (odd episodes) with saved v1 scores. Rule: keep only if tune recall@15 and precision@15 do not get worse and the reason holds.
+
+**D27. (a) Late-window credit, kept.** F11: the cliff score read only the last 6 s, so an explosion 8 s before the cut counted for nothing. Beats 6 to 12 s before the end that match a genre-general list of big beats (explosions, entrances, reveals, crashes, held shots) or the existing physical words now add up to 0.10. Tune: recall@5 3 to 4, recall@10 6 to 7, recall@15 and precision@15 unchanged.
+
+**D28. (b) Episode-depth penalty counted once, kept.** F11: late episodes lost up to 0.29 of standalone in the rules and were also marked down by the LLM's standalone score. When LLM scores exist, the blend now uses the rule score without the depth penalty. Rules-only runs keep it. Tune: unchanged.
+
+**D29. (c) No hook cut for a strong silent action opening, kept.** F13: an opening action beat with heat 0.5 or more (a punch, an explosion) is a hook even without dialogue, so the 25% silent-opening cut no longer applies to it. Tune: unchanged.
+
+**D30. (d) Delivery words in tone tags are not a resolved ending, kept.** F12: "(Soft, Tender)" describes how a line is said, not that the story settled. soft, gentle, tender and warm are stripped from tone tags before the calm-ending check. The same words in action or dialogue text still count. Tune: unchanged. (Round 1 tried removing these words everywhere; this is narrower.)
+
+**D31. (e) Resolved endings rank below open endings, kept.** F14: when the rules flag a calm ending and the LLM rates the cliffhanger below 6, the clip's final score is capped just below the lowest open-ended clip. Two judges agreeing that a clip ends settled is a strong signal. Tune: unchanged.
+
+**D32. Test split checked once after all five.** Even episodes: recall@5 3/14 to 4/14, everything else unchanged (recall@15 5/14, precision@15 5/9). All episodes: recall@10 6/31 to 8/31, recall@5 4/31 to 3/31, recall@15 10/31 and precision@15 10/15 unchanged. Not worse on the test split, so all five stay on. The small movement says the remaining misses are not caused by these rule details.

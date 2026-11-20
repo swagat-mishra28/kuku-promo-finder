@@ -18,7 +18,7 @@ from pathlib import Path
 from .candidates import Candidate, Segment, hook_clips
 from .features import line_heat, score_candidate, transcript
 from .parser import load_show
-from .pipeline import blended, dedupe, post_order, promo_record, write_outputs
+from .pipeline import dedupe, post_order, promo_record, set_finals, write_outputs
 
 
 def config_hash(cfg: dict) -> str:
@@ -51,8 +51,8 @@ def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_
     for entry in saved:
         c = _rebuild(entry, eps)
         score_candidate(c, eps, cfg["scoring"])
-        c.final = round(blended(c, cfg), 4)
         shortlist.append(c)
+    set_finals(shortlist, cfg)
     final_pool = dedupe(shortlist, cfg["dedupe_overlap"], key=lambda c: c.final)[: cfg["top_n"]]
     ordered = post_order(sorted(final_pool, key=lambda c: c.final, reverse=True), cfg)
     promos = [promo_record(rank, c, eps, cfg) for rank, c in enumerate(ordered, 1)]

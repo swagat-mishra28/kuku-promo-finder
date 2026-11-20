@@ -36,6 +36,12 @@ CALM = r"\bthank you\b|\bit is over\b|\bpeaceful|\bsafe\b|\brelief\b|\bsmil(e|es
        r"\bwarm(ly|th)?\b|\btender(ly)?\b|\bembrac|\bgentle\b|\bgently\b|\bcontent(ed)?\b|\bcomfort|\bgrateful\b|" \
        r"\bsoft(ly)?\b|\bfades? (out|to)|\bhope\b|\bserenity\b|\bi accept\b|\bi will wait\b|\bsunlight\b|" \
        r"\bhand-in-hand\b|\bnestl"
+# Words that describe HOW a line is delivered. In a tone tag they are not a resolved ending.
+DELIVERY = r"\bsoft(ly)?\b|\bgentle\b|\bgently\b|\btender(ly)?\b|\bwarm(ly|th)?\b"
+# Big late beats that can end a clip even when the last line is quiet (entrances, reveals, impacts).
+LATE_BEAT = r"explo|detonat|fireball|bursts? (in|open|through)|storms? (in|into)|emerg|appears|enters|" \
+            r"walks (in|through)|reveal|unmask|collaps|crash|shatter|gunshot|scream|slams? (open|shut)|" \
+            r"freeze|frozen|holds on|cut to black|cuts to black"
 CONTINUATION = re.compile(r"^(\.\.\.|…|and\b|but\b|then\b|so\b|or\b|because\b|[a-z])")
 
 
@@ -82,7 +88,10 @@ def score_candidate(c: Candidate, eps: dict[int, Episode], cfg: dict) -> Candida
     hook_ev = max(first, key=lambda x: line_heat(x[0]), default=None)
     hook = line_heat(hook_ev[0]) if hook_ev else 0.0
     if not any(x[0].kind == "dialogue" and x[1] <= 3.0 for x in tl):
-        hook *= 0.75  # silent opening: weaker on social feeds
+        strong_action = (cfg.get("fix_silent_action_hook") and hook_ev is not None
+                         and hook_ev[0].kind in ("action", "sfx") and hook >= cfg.get("silent_hook_heat", 0.5))
+        if not strong_action:
+            hook *= 0.75  # silent opening: weaker on social feeds
     first_line = talk[0][0] if talk else None
     flags = []
     if first_line is not None and talk[0][1] <= 3.5:
@@ -111,13 +120,23 @@ def score_candidate(c: Candidate, eps: dict[int, Episode], cfg: dict) -> Candida
     visual = " ".join(x[0].text + " " + x[0].tone for x in tail)   # camera + sfx included
     cliff += 0.15 * min(1, rx(CLIFF_SFX, visual))
     cliff += 0.05 * min(1, rx(PHYSICAL, tail_text))
+    if cfg.get("fix_late_window"):
+        # A big beat a few seconds before the cut (explosion, entrance, reveal) still leaves the viewer hanging.
+        win = cfg.get("late_window_s", 12.0)
+        late = [x for x in tl if dur - win <= x[2] < dur - 6.0]
+        late_text = " ".join(x[0].text + " " + x[0].tone for x in late)
+        cliff += cfg.get("late_window_weight", 0.10) * min(1, rx(LATE_BEAT + "|" + PHYSICAL, late_text))
     nxt = [e for e in ep.lines if e.start >= last_seg.end - 0.1]
     if nxt and last_line is not None and nxt[0].speaker != last_line.speaker:
         cliff += 0.10
     is_finale = last_seg.end >= ep.duration - 1.0
     if is_finale:
         cliff += cfg.get("finale_bonus", 0.20)   # writers already placed a cliffhanger here
-    calm = rx(CALM, tail_text + " " + tail_tone)
+    if cfg.get("fix_calm_delivery"):
+        tone_clean = re.sub(DELIVERY, " ", tail_tone.lower())
+        calm = rx(CALM, tail_text) + rx(CALM, tone_clean)
+    else:
+        calm = rx(CALM, tail_text + " " + tail_tone)
     if calm:
         cliff -= 0.12 * min(2, calm)
         flags.append("ends on a calm / resolved beat")
@@ -132,11 +151,12 @@ def score_candidate(c: Candidate, eps: dict[int, Episode], cfg: dict) -> Candida
         standalone -= 0.10
     if "opens mid-sentence / on an off-screen line" in flags:
         standalone -= 0.15
-    standalone -= cfg.get("episode_depth_penalty", 0.006) * max(0, last_seg.episode - 1)
+    depth = cfg.get("episode_depth_penalty", 0.006) * max(0, last_seg.episode - 1)
     if len(talk) < 3:
         standalone -= 0.15
         flags.append("very little dialogue: hard to follow without context")
-    standalone = max(0.0, min(1.0, standalone))
+    standalone_nodepth = max(0.0, min(1.0, standalone))
+    standalone = max(0.0, min(1.0, standalone - depth))
 
     # ---------- heat & length ----------
     heat = sum(line_heat(x[0]) for x in beats) / max(1.0, dur / 4.0)
@@ -151,6 +171,7 @@ def score_candidate(c: Candidate, eps: dict[int, Episode], cfg: dict) -> Candida
         score -= cfg.get("cold_open_penalty", 0.03)   # editing cost: two cuts instead of one
 
     c.features.update(dict(hook=round(hook, 3), cliff=round(cliff, 3), standalone=round(standalone, 3),
+                           standalone_nodepth=round(standalone_nodepth, 3),
                            heat=round(heat, 3), length=round(length, 3), finale=is_finale, flags=flags,
                            hook_line=(hook_ev[0].text if hook_ev else ""),
                            hook_speaker=(hook_ev[0].speaker if hook_ev else ""),

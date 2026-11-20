@@ -13,6 +13,14 @@ scoring:
   finale_bonus: 0.20          # episode endings are written as cliffhangers
   episode_depth_penalty: 0.006  # later episodes need more backstory
   cold_open_penalty: 0.03     # two cuts cost more editor time than one
+  # Round 2 design fixes (DECISIONS.md D27 to D31). Each can be switched off.
+  fix_late_window: true       # a) credit a big beat 6-12 s before the cut
+  late_window_s: 12
+  late_window_weight: 0.10
+  fix_depth_once: true        # b) drop episode_depth_penalty from rules when the LLM judged standalone
+  fix_silent_action_hook: true    # c) no 25% hook cut when the silent opening is a high-heat action
+  silent_hook_heat: 0.5
+  fix_calm_delivery: true     # d) soft/gentle/tender/warm in a tone tag is delivery, not a resolved ending
 
 cold_open:
   enabled: true
@@ -25,6 +33,8 @@ ranking:
   early_episode_bonus: 0.06   # funnel: promos from early episodes send viewers to Ep 1
   early_episode_cutoff: 10
   repeat_episode_penalty: 0.05
+  fix_cap_resolved: true      # e) calm-flagged ending with LLM cliffhanger_score < 6 ranks below open endings
+  resolved_llm_cliff_max: 6
 
 # Record of tuning attempts (copied into run_meta.json by --rescore-from). Not used for scoring.
 tuning_log:

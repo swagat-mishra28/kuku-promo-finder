@@ -45,14 +45,45 @@ def dedupe(cands: list[Candidate], max_overlap: float, key=lambda c: c.score) ->
     return kept
 
 
+def rules_for_blend(c: Candidate, cfg) -> float:
+    """Rule score used in the blend. With fix_depth_once, the episode-depth penalty is dropped when the
+    LLM has judged standalone sense, so late episodes are not penalised twice."""
+    if cfg["scoring"].get("fix_depth_once") and c.llm and "standalone_score" in c.llm:
+        f = c.features
+        if "standalone_nodepth" in f:
+            return c.score + cfg["scoring"]["weights"]["standalone"] * (f["standalone_nodepth"] - f["standalone"])
+    return c.score
+
+
 def blended(c: Candidate, cfg) -> float:
     if c.llm and "overall" in c.llm:
         l = c.llm
         llm_score = (0.30 * l["hook_score"] + 0.30 * l["cliffhanger_score"]
                      + 0.20 * l["standalone_score"] + 0.20 * l["overall"]) / 10.0
         w = cfg["ranking"]["llm_weight"]
-        return (1 - w) * c.score + w * llm_score
+        return (1 - w) * rules_for_blend(c, cfg) + w * llm_score
     return c.score
+
+
+def resolved_ending(c: Candidate, cfg) -> bool:
+    """Both judges agree the clip ends settled: rules flag a calm ending and the LLM rates the cliff low."""
+    lim = cfg["ranking"].get("resolved_llm_cliff_max", 6)
+    return ("ends on a calm / resolved beat" in c.features.get("flags", [])
+            and c.llm.get("cliffhanger_score", 10) < lim)
+
+
+def set_finals(shortlist: list, cfg) -> None:
+    """Final score for every shortlisted clip. With fix_cap_resolved, a resolved ending can never
+    outrank a clip with an open ending."""
+    for c in shortlist:
+        c.final = round(blended(c, cfg), 4)
+    if cfg["ranking"].get("fix_cap_resolved"):
+        open_finals = [c.final for c in shortlist if not resolved_ending(c, cfg)]
+        if open_finals:
+            floor = min(open_finals)
+            for c in shortlist:
+                if resolved_ending(c, cfg) and c.final >= floor:
+                    c.final = round(floor - 0.0001, 4)
 
 
 def qa(c: Candidate, eps, cfg) -> dict:
@@ -187,8 +218,7 @@ def run(cfg: dict, episodes_dir: str, out_dir: str, log=print) -> dict:
     if llm.enabled:
         log(f"LLM judge: {llm.name()}")
         judge(shortlist, eps, llm, log)
-    for c in shortlist:
-        c.final = round(blended(c, cfg), 4)
+    set_finals(shortlist, cfg)
     final_pool = dedupe(shortlist, cfg["dedupe_overlap"], key=lambda c: c.final)[: cfg["top_n"]]
     ordered = post_order(sorted(final_pool, key=lambda c: c.final, reverse=True), cfg)
 
