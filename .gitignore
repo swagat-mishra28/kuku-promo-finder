@@ -20,3 +20,6 @@ raw_outputs_for_drive.zip
 .streamlit/secrets.toml
 SOLUTION_DOC_DRAFT.md
 
+eval/random_sheet.md
+eval/random_labels.md
+eval/random_pool.json

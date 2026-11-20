@@ -17,6 +17,7 @@ from pathlib import Path
 
 from .candidates import Candidate, Segment, hook_clips
 from .features import line_heat, score_candidate, transcript
+from .judge import PROMPT_VERSION_V2, StopJudging, judge
 from .parser import load_show
 from .pipeline import dedupe, post_order, promo_record, set_finals, write_outputs
 
@@ -39,7 +40,9 @@ def _rebuild(entry: dict, eps) -> Candidate:
     return c
 
 
-def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_notes=None, log=print) -> dict:
+def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_notes=None, log=print,
+            llm=None) -> dict:
+    """With llm given, the saved shortlist is judged again by that model (same clips, new prompt)."""
     t0 = time.time()
     src = Path(source_run)
     saved = json.loads((src / "shortlist_all_scored.json").read_text(encoding="utf-8"))
@@ -52,6 +55,22 @@ def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_
         c = _rebuild(entry, eps)
         score_candidate(c, eps, cfg["scoring"])
         shortlist.append(c)
+    judged = None
+    if llm is not None:
+        version = cfg["llm"].get("judge_version", "v1")
+        for c in shortlist:
+            c.llm = {}
+        log(f"Re-judging the same {len(shortlist)} clips with {llm.name()} (prompt {version})")
+        t_judge = time.time()
+        stopped = ""
+        try:
+            judge(shortlist, eps, llm, log, version=version)
+        except StopJudging as e:
+            stopped = str(e)
+        judged = {"started": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(t_judge)),
+                  "finished": time.strftime("%Y-%m-%d %H:%M:%S"),
+                  "prompt_version": PROMPT_VERSION_V2 if version == "v2" else "judge-v1",
+                  "stopped_on_error": stopped}
     set_finals(shortlist, cfg)
     final_pool = dedupe(shortlist, cfg["dedupe_overlap"], key=lambda c: c.final)[: cfg["top_n"]]
     ordered = post_order(sorted(final_pool, key=lambda c: c.final, reverse=True), cfg)
@@ -59,6 +78,11 @@ def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_
 
     end = time.strptime(src_meta["run_at"], "%Y-%m-%d %H:%M:%S")
     start = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.mktime(end) - src_meta["runtime_s"]))
+    if judged is not None:
+        src_meta = {**src_meta, "run_at": judged["finished"], "runtime_s": time.time() - t_judge,
+                    "model": llm.name(), "llm_calls": llm.calls, "tokens_in": llm.tokens_in,
+                    "tokens_out": llm.tokens_out}
+        src = Path(out_dir)
     meta = {
         "run_at": time.strftime("%Y-%m-%d %H:%M:%S"),
         "episodes": sorted(eps),
@@ -72,12 +96,15 @@ def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_
             "tokens_in": src_meta["tokens_in"],
             "tokens_out": src_meta["tokens_out"],
         },
+        "prompt_version": (judged or {}).get("prompt_version") or src_meta.get("prompt_version", "judge-v1"),
         "config_hash": config_hash(cfg),
         "tuning_changes": list(tuning_notes or []),
         "candidates_total": src_meta.get("candidates_total"),
         "distinct_moments": src_meta.get("distinct_moments"),
         "shortlist": len(shortlist),
-        "llm_calls": 0, "llm_cache_hits": 0, "tokens_in": 0, "tokens_out": 0,  # this re-rank itself
+        "llm_calls": llm.calls if llm else 0, "llm_cache_hits": llm.cache_hits if llm else 0,
+        "tokens_in": llm.tokens_in if llm else 0, "tokens_out": llm.tokens_out if llm else 0,
+        "judge_run": judged,
         "runtime_s": round(time.time() - t0, 1),
     }
     write_outputs(promos, meta, out_dir)

@@ -19,7 +19,7 @@ scoring:
   late_window_weight: 0.10
   fix_depth_once: true        # b) drop episode_depth_penalty from rules when the LLM judged standalone
   fix_silent_action_hook: true    # c) no 25% hook cut when the silent opening is a high-heat action
-  silent_hook_heat: 0.5
+  silent_hook_heat: 0.35     # top ~10% of action lines (46 of 486); 0.5 was never reached
   fix_calm_delivery: true     # d) soft/gentle/tender/warm in a tone tag is delivery, not a resolved ending
 
 cold_open:
@@ -55,6 +55,8 @@ llm:
   api_key_env: PROMO_LLM_API_KEY
   base_url: ""                # only for openai_compatible / self-hosted endpoints
   temperature: 0.2
+  judge_version: v2          # v1 = transcript only; v2 = adds episode summary and needs_prior_context
   reasoning_effort: low       # low | medium | high | "" (unset). Sent only for groq / openai_compatible
+  max_run_tokens: 192000      # judge stops before Groq's 200k daily cap
   min_seconds_between_calls: 13 # Groq free tier: ~8k tokens/min at ~1.6k tokens per judge call
   cache_dir: .cache/llm

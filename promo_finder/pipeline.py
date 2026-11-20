@@ -103,9 +103,13 @@ def qa(c: Candidate, eps, cfg) -> dict:
         # LLM-judged: only these three reasons send a clip to the editor (hard fails always do).
         q = cfg["qa"]
         reasons = []
-        confusing = (c.llm.get("confusing_for_new_viewer") or "").strip()
-        if confusing and q.get("flag_on_confusing_text", True):
-            reasons.append("LLM: confusing for a new viewer: " + confusing[:140])
+        if "needs_prior_context" in c.llm:   # judge v2: a real true/false answer
+            if c.llm["needs_prior_context"]:
+                reasons.append("LLM: needs prior context: " + (c.llm.get("context_reason") or "")[:140])
+        else:                                # judge v1: free text, almost always filled
+            confusing = (c.llm.get("confusing_for_new_viewer") or "").strip()
+            if confusing and q.get("flag_on_confusing_text", True):
+                reasons.append("LLM: confusing for a new viewer: " + confusing[:140])
         if c.llm.get("standalone_score", 10) < q.get("min_llm_standalone", 5):
             reasons.append(f"LLM standalone score {c.llm['standalone_score']:.0f}/10 is below {q.get('min_llm_standalone', 5)}")
         gap = abs(c.score - c.llm["overall"] / 10.0)
@@ -217,7 +221,7 @@ def run(cfg: dict, episodes_dir: str, out_dir: str, log=print) -> dict:
     llm = LLM(cfg.get("llm", {}))
     if llm.enabled:
         log(f"LLM judge: {llm.name()}")
-        judge(shortlist, eps, llm, log)
+        judge(shortlist, eps, llm, log, version=cfg["llm"].get("judge_version", "v1"))
     set_finals(shortlist, cfg)
     final_pool = dedupe(shortlist, cfg["dedupe_overlap"], key=lambda c: c.final)[: cfg["top_n"]]
     ordered = post_order(sorted(final_pool, key=lambda c: c.final, reverse=True), cfg)

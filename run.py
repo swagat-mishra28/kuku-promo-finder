@@ -31,6 +31,8 @@ def main():
     ap.add_argument("--top", type=int, default=None)
     ap.add_argument("--rescore-from", default=None, metavar="RUN_DIR",
                     help="re-rank a finished run from its saved scores (no LLM calls)")
+    ap.add_argument("--rejudge-from", default=None, metavar="RUN_DIR",
+                    help="judge the SAME saved shortlist again with the configured model and prompt")
     a = ap.parse_args()
 
     cfg = yaml.safe_load(Path(a.config).read_text(encoding="utf-8"))
@@ -43,6 +45,14 @@ def main():
         os.environ["PROMO_LLM_MODEL"] = a.model
     if a.top:
         cfg["top_n"] = a.top
+    if a.rejudge_from:
+        from promo_finder.llm import LLM
+        llm = LLM(cfg["llm"])
+        if not llm.enabled:
+            raise SystemExit("--rejudge-from needs a provider (set --provider or PROMO_LLM_PROVIDER)")
+        out = a.out or f"outputs/{time.strftime('%Y%m%d_%H%M')}_rejudged"
+        rescore(cfg, a.rejudge_from, a.episodes, out, tuning_notes=cfg.get("tuning_log", []), llm=llm)
+        return
     if a.rescore_from:
         os.environ["PROMO_LLM_PROVIDER"] = "none"   # belt and braces: rescoring never calls a model
         out = a.out or f"outputs/{time.strftime('%Y%m%d_%H%M')}_rescored"

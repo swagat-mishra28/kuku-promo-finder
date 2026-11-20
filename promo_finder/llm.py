@@ -58,6 +58,7 @@ class LLM:
         self.cache_dir = Path(cfg.get("cache_dir", ".cache/llm"))
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.min_interval = cfg.get("min_seconds_between_calls", 0.0)  # free-tier rate limits
+        self.max_run_tokens = cfg.get("max_run_tokens", 0)  # stop a run before a daily token cap
         self._last = 0.0
         self.calls = 0
         self.cache_hits = 0
@@ -98,6 +99,8 @@ class LLM:
                 return out
             except Exception as e:  # noqa: BLE001
                 err = e
+                if " 429" in str(e) or "quota" in str(e).lower():
+                    break   # rate limit or daily cap: retrying only burns more quota
                 time.sleep(2 * (attempt + 1))
         raise LLMError(f"{self.name()} failed: {err}")
 
