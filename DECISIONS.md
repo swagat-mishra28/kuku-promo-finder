@@ -119,3 +119,15 @@ Each fix comes from a failure in FAILURES.md, is switched in config.yaml, and wa
 **D47. What the weights say.** Trained on all 120 clips, on standardised features: rank in episode -0.78 (better-ranked clips in an episode are more often gold), LLM overall relative to its episode +0.74, clip is the episode's ending +0.67, rules cliffhanger +0.47, LLM cliffhanger +0.35, raw LLM overall -0.28, rules standalone +0.13, rules hook about 0. Hook barely matters once the other signals are known, and how a clip compares to its own episode matters more than its absolute LLM score.
 
 **D48. Exported as config only, switched off.** ranking.learned_blend in config.yaml holds the feature names, weights, intercept, means and stds, with enabled: false and accepted_by_cv: false. promo_finder/learned.py applies it when enabled. With it off, output is identical to round 2.
+
+## Round 3, Phase 2: listwise rerank (code and fake-server test only, no Groq calls)
+
+**D49. A second stage that compares clips side by side, off by default.** After blending, the top 30 distinct clips go to the judge in batches of 10, as transcripts only (no scores, no episode summary), shuffled with a fixed seed. The judge returns them in order with one reason each. Two passes with different shuffles give each clip two positions in different company. The average becomes a 0 to 1 rank score, blended 0.7 blend + 0.3 rank. Only the order inside the top 30 changes: the 30 keep their band of final scores, and clips that overlap them stay below the band. Settings live under rerank: in config.yaml (enabled: false).
+
+**D50. No camera lines in rerank prompts by default.** With camera lines a 10-clip batch is about 7k input tokens, which with output would break Groq's ~8k tokens-per-minute limit in a single call. Without them it is about 3.3k. Action and sound lines stay, so visual beats are still visible. Calls are spaced 60 s apart.
+
+**D51. Batches depend on which clips they are, not on their scores.** The first test run showed that shuffling by score order changed the batches whenever scores changed, which means new prompts and new paid calls. Clips are now sorted by identity (episode and timestamps) before the seeded shuffle, so the same 30 clips always give the same 6 prompts and hit the cache.
+
+**D52. Failure handling.** A clip missing from a reply, an unknown or repeated id, or a reply without a ranking list scores neutral (0.5) and is logged. A reply that is not JSON at all scores the batch neutral. A 429 or quota error stops the stage after one call and keeps the blend order. All of these are covered by tests against a fake OpenAI-compatible server.
+
+**D53. Token estimate about 26k, measured, not guessed.** A dry run of the exact command against a local fake server sent 6 prompts of 10.9k to 12.7k characters (about 21k input tokens). The run is documented in RUN_STAGE2.md, with --no-fixes (added; reproduces outputs/final exactly) for groq_v3 and --rerank-saved (re-applies saved scores, no calls) for final_v3.

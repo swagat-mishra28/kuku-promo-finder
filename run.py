@@ -33,6 +33,12 @@ def main():
                     help="re-rank a finished run from its saved scores (no LLM calls)")
     ap.add_argument("--rejudge-from", default=None, metavar="RUN_DIR",
                     help="judge the SAME saved shortlist again with the configured model and prompt")
+    ap.add_argument("--no-fixes", action="store_true",
+                    help="switch off every fix_* rule change in config (round-1 rules)")
+    ap.add_argument("--rerank-saved", action="store_true",
+                    help="with --rescore-from: re-apply rerank scores saved in that run (no calls)")
+    ap.add_argument("--rerank", action="store_true",
+                    help="with --rescore-from: run the listwise rerank stage with the configured model")
     a = ap.parse_args()
 
     cfg = yaml.safe_load(Path(a.config).read_text(encoding="utf-8"))
@@ -45,6 +51,11 @@ def main():
         os.environ["PROMO_LLM_MODEL"] = a.model
     if a.top:
         cfg["top_n"] = a.top
+    if a.no_fixes:
+        for sec in ("scoring", "ranking"):
+            for k in list(cfg[sec]):
+                if k.startswith("fix_"):
+                    cfg[sec][k] = False
     if a.rejudge_from:
         from promo_finder.llm import LLM
         llm = LLM(cfg["llm"])
@@ -54,9 +65,22 @@ def main():
         rescore(cfg, a.rejudge_from, a.episodes, out, tuning_notes=cfg.get("tuning_log", []), llm=llm)
         return
     if a.rescore_from:
-        os.environ["PROMO_LLM_PROVIDER"] = "none"   # belt and braces: rescoring never calls a model
+        if not a.rerank:
+            os.environ["PROMO_LLM_PROVIDER"] = "none"   # belt and braces: rescoring never calls a model
         out = a.out or f"outputs/{time.strftime('%Y%m%d_%H%M')}_rescored"
-        rescore(cfg, a.rescore_from, a.episodes, out, tuning_notes=cfg.get("tuning_log", []))
+        rerank_llm = None
+        if a.rerank_saved:
+            cfg.setdefault("rerank", {})["enabled"] = True
+        if a.rerank:
+            from promo_finder.llm import LLM
+            cfg.setdefault("rerank", {})["enabled"] = True
+            os.environ["PROMO_LLM_PROVIDER"] = cfg["llm"]["provider"]
+            rerank_llm = LLM({**cfg["llm"], "min_seconds_between_calls":
+                              cfg["rerank"].get("min_seconds_between_calls", 60)})
+            if not rerank_llm.enabled:
+                raise SystemExit("--rerank needs a provider (set --provider)")
+        rescore(cfg, a.rescore_from, a.episodes, out, tuning_notes=cfg.get("tuning_log", []),
+                rerank_llm=rerank_llm)
         return
     tag = cfg["llm"]["provider"] if cfg["llm"]["provider"] != "none" else "rules"
     out = a.out or f"outputs/{time.strftime('%Y%m%d_%H%M')}_{tag}"

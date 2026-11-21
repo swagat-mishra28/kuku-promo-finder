@@ -19,7 +19,7 @@ from .candidates import Candidate, Segment, hook_clips
 from .features import line_heat, score_candidate, transcript
 from .judge import PROMPT_VERSION_V2, StopJudging, judge
 from .parser import load_show
-from .pipeline import dedupe, post_order, promo_record, set_finals, write_outputs
+from .pipeline import dedupe, post_order, promo_record, rerank_stage, set_finals, write_outputs
 
 
 def config_hash(cfg: dict) -> str:
@@ -41,7 +41,7 @@ def _rebuild(entry: dict, eps) -> Candidate:
 
 
 def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_notes=None, log=print,
-            llm=None) -> dict:
+            llm=None, rerank_llm=None) -> dict:
     """With llm given, the saved shortlist is judged again by that model (same clips, new prompt)."""
     t0 = time.time()
     src = Path(source_run)
@@ -72,6 +72,7 @@ def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_
                   "prompt_version": PROMPT_VERSION_V2 if version == "v2" else "judge-v1",
                   "stopped_on_error": stopped}
     set_finals(shortlist, cfg)
+    rerank_info = rerank_stage(shortlist, eps, cfg, rerank_llm, log)
     final_pool = dedupe(shortlist, cfg["dedupe_overlap"], key=lambda c: c.final)[: cfg["top_n"]]
     ordered = post_order(sorted(final_pool, key=lambda c: c.final, reverse=True), cfg)
     promos = [promo_record(rank, c, eps, cfg) for rank, c in enumerate(ordered, 1)]
@@ -107,6 +108,9 @@ def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_
         "llm_calls": llm.calls if llm else 0, "llm_cache_hits": llm.cache_hits if llm else 0,
         "tokens_in": llm.tokens_in if llm else 0, "tokens_out": llm.tokens_out if llm else 0,
         "judge_run": judged,
+        "rerank": rerank_info or None,
+        "rerank_tokens": ({"calls": rerank_llm.calls, "tokens_in": rerank_llm.tokens_in,
+                           "tokens_out": rerank_llm.tokens_out} if rerank_llm else None),
         "unjudged_clips": sum(1 for c in shortlist if "overall" not in (c.llm or {})),
         "runtime_s": round(time.time() - t0, 1),
     }

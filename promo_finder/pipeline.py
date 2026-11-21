@@ -91,6 +91,28 @@ def set_finals(shortlist: list, cfg) -> None:
                     c.final = round(floor - 0.0001, 4)
 
 
+def rerank_stage(shortlist: list, eps, cfg, llm=None, log=print) -> dict:
+    """Optional listwise second stage (rerank.enabled). With an LLM it asks the judge; without one it
+    re-applies rerank scores saved in the shortlist. Clips that overlap a reranked clip are kept below
+    the reranked band, so dedupe cannot swap them back in."""
+    rc = cfg.get("rerank") or {}
+    if not rc.get("enabled"):
+        return {}
+    from .rerank import apply_saved, rerank
+    top = dedupe(shortlist, cfg["dedupe_overlap"], key=lambda c: c.final)[: rc.get("top_k", 30)]
+    if llm is not None and llm.enabled:
+        info = rerank(top, eps, llm, cfg, log)
+    else:
+        info = {"reranked": apply_saved(top, cfg), "from_saved_scores": True}
+    if info.get("reranked"):
+        floor = min(c.final for c in top)
+        ids = {id(c) for c in top}
+        for c in shortlist:
+            if id(c) not in ids and c.final >= floor:
+                c.final = round(floor - 0.0001, 4)
+    return info
+
+
 def qa(c: Candidate, eps, cfg) -> dict:
     f = c.features
     checks = {
@@ -228,6 +250,7 @@ def run(cfg: dict, episodes_dir: str, out_dir: str, log=print) -> dict:
         log(f"LLM judge: {llm.name()}")
         judge(shortlist, eps, llm, log, version=cfg["llm"].get("judge_version", "v1"))
     set_finals(shortlist, cfg)
+    rerank_info = rerank_stage(shortlist, eps, cfg, llm if llm.enabled else None, log)
     final_pool = dedupe(shortlist, cfg["dedupe_overlap"], key=lambda c: c.final)[: cfg["top_n"]]
     ordered = post_order(sorted(final_pool, key=lambda c: c.final, reverse=True), cfg)
 
@@ -242,6 +265,8 @@ def run(cfg: dict, episodes_dir: str, out_dir: str, log=print) -> dict:
         "tokens_in": llm.tokens_in, "tokens_out": llm.tokens_out,
         "runtime_s": round(time.time() - t0, 1),
     }
+    if rerank_info:
+        meta["rerank"] = rerank_info
     meta["parse_warnings"] = warns
     write_outputs(promos, meta, out_dir)
     # Full shortlist (before final ranking) for audit / eval of the judge stage

@@ -45,6 +45,16 @@ ranking:
     std: [0.191, 0.1592, 0.1636, 0.493, 0.1128, 0.1976, 1.118, 0.075]
     note: "logistic re-blend learned by eval/cv_reblend.py; final = sigmoid(w . (x - mean) / std + b)"
 
+# Optional second stage (promo_finder/rerank.py). Off by default; see RUN_STAGE2.md.
+rerank:
+  enabled: false
+  top_k: 30                 # clips reranked after blending and dedupe
+  batch_size: 10            # clips per judge call
+  seeds: [17, 29]           # one shuffle per pass; two passes = 6 calls
+  weight: 0.3               # final order inside the top_k = 0.7 blend + 0.3 listwise rank
+  with_camera: false        # camera lines double the prompt and break Groq's ~8k tokens/minute limit
+  min_seconds_between_calls: 60   # about 4k tokens per call; stays under ~8k tokens/minute
+
 # Record of tuning attempts (copied into run_meta.json by --rescore-from). Not used for scoring.
 tuning_log:
   - "2026-11-21: tried ranking.llm_weight 0.6 -> 0.7 on the tune split (odd episodes). Tune recall@5 3->4 and recall@10 6->7; recall@15 and precision@15 unchanged. Test split (even episodes): recall unchanged at every k, precision@15 fell from 5/9 to 5/10. Reverted. No tuning change is active."
