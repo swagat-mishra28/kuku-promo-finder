@@ -10,7 +10,7 @@ Fixed: pointed TMP, TEMP and PIP_CACHE_DIR at E:\pip_tmp for installs. No code c
 
 **F02. promos.json was not valid UTF-8 on Windows.**
 Found: reading promos.json with encoding="utf-8" failed on byte 0x97, the Windows cp1252 code for an em dash. The evaluator only worked because it also used the Windows default.
-Fixed: every read_text, write_text and open() call now passes encoding="utf-8". Re-ran rules-only; recall and precision were unchanged (45% and 43%), and all output files decode as UTF-8.
+Fixed: every read_text, write_text and open() call now passes encoding="utf-8". Re-ran rules-only; recall and precision were unchanged, and all output files decode as UTF-8.
 
 **F03. Gemini free tier stopped the LLM run after about 23 calls.**
 Found: gemini-2.5-flash returned 404 for new users, gemini-3.8-flash timed out and then returned 503, and gemini-3.5-flash worked but answered slowly (46 s for a tiny prompt). The full run then failed with 429 at 23 of 120 calls. The full error said "GenerateRequestsPerDayPerProjectPerModel-FreeTier, limit 20". llm.py cuts errors to 300 characters, which hid the quota name, so I sent one direct request to read the full message.

@@ -85,7 +85,7 @@ promo_finder/llm.py         provider-agnostic JSON completion with disk cache
 promo_finder/judge.py       LLM judge prompt
 promo_finder/pipeline.py    orchestration, dedupe, ranking, QA, outputs
 promo_finder/rescore.py     re-rank saved scores with no LLM calls
-promo_finder/rerank.py      optional listwise second stage (off by default, see RUN_STAGE2.md)
+promo_finder/rerank.py      optional listwise second stage (off by default, see docs/RUN_STAGE2.md)
 promo_finder/learned.py     optional learned re-blend (off: cross-validation showed no gain)
 eval/                       gold set, evaluator, review sheet builder
 tests/                      pytest suite (invented data only)

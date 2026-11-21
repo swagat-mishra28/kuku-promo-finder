@@ -45,7 +45,7 @@ ranking:
     std: [0.191, 0.1592, 0.1636, 0.493, 0.1128, 0.1976, 1.118, 0.075]
     note: "logistic re-blend learned by eval/cv_reblend.py; final = sigmoid(w . (x - mean) / std + b)"
 
-# Optional second stage (promo_finder/rerank.py). Off by default; see RUN_STAGE2.md.
+# Optional second stage (promo_finder/rerank.py). Off by default; see docs/RUN_STAGE2.md.
 rerank:
   enabled: false
   top_k: 30                 # clips reranked after blending and dedupe

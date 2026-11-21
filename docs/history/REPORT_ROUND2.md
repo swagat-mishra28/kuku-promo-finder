@@ -1,5 +1,7 @@
 # Round 2 report
 
+> Historical report, kept for the record. It describes the project at the end of that round. The main result is now outputs/final_main (v1 LLM scores plus five rule fixes); the final numbers are in README.md and REPORT_FINAL.md.
+
 Branch `round2`, local commits only. outputs/final, outputs/groq_v1_final and raw_outputs_for_drive.zip were not touched.
 
 ## Status per phase
@@ -18,10 +20,10 @@ Counts are found/total for recall and hits/graded for precision. Gold has 31 cli
 
 | Run | Gold set | R@5 | R@10 | R@15 | R@25 | P@15 |
 |---|---|---|---|---|---|---|
-| rules only | gold odd | 1/17 | 4/17 | 4/17 | 4/17 | 4/13 |
-| rules only | gold even | 3/14 | 4/14 | 4/14 | 4/14 | 4/12 |
-| rules only | gold all | 2/31 | 4/31 | 6/31 | 8/31 | 6/15 |
-| rules only | gold_random | 1/13 | 1/13 | 2/13 | 2/13 | 2/4 labelled |
+| rules only, original rules | gold odd | 1/17 | 4/17 | 4/17 | 4/17 | 4/13 |
+| rules only, original rules | gold even | 3/14 | 4/14 | 4/14 | 4/14 | 4/12 |
+| rules only, original rules | gold all | 2/31 | 4/31 | 6/31 | 8/31 | 6/15 |
+| rules only, original rules | gold_random | 1/13 | 1/13 | 2/13 | 2/13 | 2/4 labelled |
 | v1 (outputs/final, main) | gold odd | 3/17 | 6/17 | 7/17 | 7/17 | 7/15 |
 | v1 | gold even | 3/14 | 5/14 | 5/14 | 5/14 | 5/9 |
 | v1 | gold all | 4/31 | 6/31 | 10/31 | 12/31 | 10/15 |

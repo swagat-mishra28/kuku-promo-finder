@@ -1,4 +1,6 @@
-# Final report
+# Round 1 report
+
+> Historical report, kept for the record. It describes the project at the end of that round. The main result is now outputs/final_main (v1 LLM scores plus five rule fixes); the final numbers are in README.md and REPORT_FINAL.md.
 
 ## Status
 
@@ -27,15 +29,15 @@ Gold set: 31 AI-drafted clips across all 50 episodes, graded with `--covered 1-5
 
 | Run | recall@5 | recall@10 | recall@15 | recall@25 | precision@15 |
 |---|---|---|---|---|---|
-| Rules only (outputs/rules_only_baseline) | 6% | 13% | 19% | 26% | 40% |
-| Rules + Groq gpt-oss-120b (outputs/final) | 13% | 19% | 32% | 39% | 67% |
+| Rules only, original rules (outputs/rules_only_baseline) | 2/31 | 4/31 | 6/31 | 8/31 | 6/15 |
+| Rules + Groq gpt-oss-120b (outputs/final) | 4/31 | 6/31 | 10/31 | 12/31 | 10/15 |
 
-Best possible recall@15 is 48% (25 picks, 31 gold clips).
+Best possible recall@15 is 15/31 (25 picks, 31 gold clips).
 
 | Split | recall@15 before | recall@15 after | precision@15 before | precision@15 after |
 |---|---|---|---|---|
-| Tune (odd episodes) | 41% (7/17) | 41% (7/17) | 47% (7/15) | 47% (7/15) |
-| Test (even episodes) | 36% (5/14) | 36% (5/14) | 56% (5/9) | 50% (5/10) with llm_weight 0.7, so reverted |
+| Tune (odd episodes) | 7/17 | 7/17 | 7/15 | 7/15 |
+| Test (even episodes) | 5/14 | 5/14 | 5/9 | 5/10 with llm_weight 0.7, so reverted |
 
 Final outputs use the original weights, so "after" equals "before" in outputs/final.
 

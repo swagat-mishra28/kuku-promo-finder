@@ -1,9 +1,9 @@
 # Status
 
-Branch: main (round2 and round3 merged, not pushed).
+Final push, 21 Nov 2026, branch main, nothing pushed yet.
 
-Main result: outputs/final_main (v1 LLM scores + five rule fixes). Baseline: outputs/final, outputs/groq_v1_final.
+| Phase | Status |
+|---|---|
+| 1 Consistency audit | done |
 
-Done: config defaults, final_main, tests (34 pass), leak scan, README, SOLUTION_DOC and PDF (2 pages), INTERVIEW_PREP, zip rebuilt.
-
-Left for Swagat: see REPORT_ROUND3.md "What is left for you" (labels review, own-words rewrite, push, deploy, Drive, form). Optional: rerank run per RUN_STAGE2.md after 23:40 IST.
+Main result: outputs/final_main (v1 LLM scores plus five rule fixes): recall@15 10/31, precision@15 10/15. Baselines: v1 outputs/final 10/31 and 10/15, rules only 7/31 and 7/15. Random gold set: 5/13 at recall@15.

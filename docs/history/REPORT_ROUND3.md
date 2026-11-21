@@ -1,5 +1,7 @@
 # Round 3 report
 
+> Historical report, kept for the record. It describes the project at the end of that round. The main result is now outputs/final_main (v1 LLM scores plus five rule fixes); the final numbers are in README.md and REPORT_FINAL.md.
+
 Branch `round3` (from round2), local commits only. No Groq calls this round. outputs/final, outputs/groq_v1_final and raw_outputs_for_drive.zip were not touched. Tests: 34 passed. Leak scan: no screenplay lines and no forbidden files tracked.
 
 ## Status per phase
