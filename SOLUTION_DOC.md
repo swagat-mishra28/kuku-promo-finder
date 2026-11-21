@@ -1,57 +1,65 @@
 # Finding promos in microdrama screenplays
 
-Swagat Mishra, Kuku AI Generalist assignment, Problem 1
+Swagat Mishra · Kuku AI Generalist assignment · Problem 1
 
-- Code: https://github.com/swagat-mishra28/kuku-promo-finder
-- Live app: https://kuku-promo-finder-awumukf6sgq3evtbmsljth.streamlit.app/ (try the invented sample show, or upload screenplays as .txt files or a .zip; rules-only mode needs no key, and a visitor can paste their own key for an LLM run)
+Code: https://github.com/swagat-mishra28/kuku-promo-finder · Live app: https://kuku-promo-finder-awumukf6sgq3evtbmsljth.streamlit.app/ (try the invented sample show or upload screenplays; rules-only mode needs no key)
 
-## Problem and approach
+## Why this problem
 
-Kuku gave me 50 timestamped screenplays of one microdrama. The task is to find 20 to 60 second clips that work as paid social promos: a hook in the first 3 seconds, a cut on an unresolved moment, and a story a stranger can follow. The tool must rank them and admit where it picks badly.
+I picked Problem 1 because it is the one where I could check whether I was right. Today an editor watches every episode to pick promos, and Kuku releases new shows every week, so a tool that does the first pass saves work on every show, not once. The input pack is real, and the output is a list of timestamps an editor can check in minutes: a clip either opens on a hook, cuts on an open question and makes sense to a stranger, or it does not. Problem 2 needed legal answers I could not verify in a few hours, and Problem 3 meant guessing at a problem when Kuku had already named a real one.
 
-I split the work in two. Code does everything that has a right answer: parsing timestamps, cutting only on shot boundaries and never mid-line, checking length, removing duplicates and ranking. An LLM does only the part that needs taste, which is judging a short list of clips the way a cold viewer would. This keeps the expensive model to about 2.4 calls per episode, makes every cut legal by construction, and lets Kuku swap in a stronger model by changing three settings.
+## Assumptions
 
-## How the pipeline works
+- Screenplay timestamps match the finished video, so a timestamp range is a usable cut.
+- A cut may land only on a shot boundary, never in the middle of a line, and a promo is 20 to 60 seconds.
+- "Joining a few moments" means a cold open: a 2 to 6 second flash of the payoff (from at most 25 seconds later, or the next episode's opening), then the build-up that stops just before it. Freer montages are out of scope.
+- A stranger knows nothing about the show, so the judge sees only the clip, never the show bible.
+- Kuku wants a ranked list of about 25 to post in order. Early episodes get a small boost, because a promo sends viewers to episode 1.
+- The tool reads text only, so purely visual payoffs, such as a costume reveal, cannot be judged.
 
-1. The parser turns each screenplay into timestamped camera, action, dialogue and sound events. Bad lines are skipped with a warning that names the file and line.
-2. The generator makes every legal cut: about 13,250 for 50 episodes. It also builds "cold opens", where a 2 to 6 second flash of the payoff plays first, followed by the build-up that stops just before it.
-3. Rules score each cut for hook, cliffhanger, standalone sense, conflict density and length.
-4. Duplicates are removed. Each episode's own ending always reaches the shortlist, because writers already end episodes on a cliffhanger.
-5. The LLM judge (Groq, openai/gpt-oss-120b) re-scores 120 shortlisted clips. It sees only the clip, never the show bible.
-6. The final score is 0.4 rules plus 0.6 LLM. A posting order then spreads episodes and slightly favours early ones, which send viewers to episode 1.
-7. QA checks each pick and sends anything below "high" confidence to an editor.
+## How it works
 
-## Results
+1. **Parse (code).** Each screenplay becomes timestamped camera, action, dialogue and sound events. Bad lines are skipped with a warning naming the file and line.
+2. **Cut (code).** Every legal cut is generated: about 13,250 for 50 episodes, plus cold opens. Every cut is legal by construction.
+3. **Score and shortlist (code).** Rules score the hook, cliffhanger, standalone sense, conflict and length, then remove duplicates. Each episode's own ending always reaches the shortlist, because writers end episodes on a cliffhanger.
+4. **Judge (LLM).** Groq's openai/gpt-oss-120b re-scores the 120 shortlisted clips, about 2.4 per episode, as a cold viewer would.
+5. **Rank and check (code).** The final score is 0.4 rules plus 0.6 LLM. A posting order spreads the picks across episodes. QA re-checks every pick and sends anything below "high" confidence to an editor, with the reason.
 
-I graded against a 31-clip gold set covering all 50 episodes. **The gold labels were drafted by AI (Claude) from the transcripts.** I then reviewed every one (the 31 here and the 4 that appear only in the random set below), reading the lines around each cut, and kept all of them with the same start and end. I added no clips.
+## How I know it's good
+
+The gold set has 31 clips across all 50 episodes. **AI (Claude) drafted the labels from the transcripts.** I then reviewed every one, reading the lines around each cut, and kept all of them unchanged.
 
 | Run | recall@5 | recall@10 | recall@15 | recall@25 | precision@15 |
 |---|---|---|---|---|---|
 | Rules only | 2/31 | 5/31 | 7/31 | 10/31 | 7/15 |
-| LLM judge, original rules (v1) | 4/31 | 6/31 | 10/31 | 12/31 | 10/15 |
+| LLM judge, original rules | 4/31 | 6/31 | 10/31 | 12/31 | 10/15 |
 | LLM judge + five rule fixes (main result) | 3/31 | 8/31 | 10/31 | 12/31 | 10/15 |
 
-The list holds 25 picks for 31 gold clips, so the best possible recall@15 is 48%. One clip is about 3 points. Two of every three clips in the top 15 are ones the gold set also chose. On a second gold set of 13 YES clips drawn at random from all candidate moments, the main result finds 5 at recall@15.
+The list has 25 picks for 31 gold clips, so the best possible recall@15 is 48%. Two of every three top-15 picks are gold clips. On a second gold set of 13 clips drawn at random from all candidate moments, the main result finds 5 at recall@15. I tuned on odd episodes and tested on even ones. A weight change that helped the tune split did not hold on the test split, so I reverted it. The five rule fixes came from reading failures, not from a search. They do not change recall@15, but they move a resolved, happy ending out of the top 10.
 
-I tuned honestly, with odd episodes as the tune split and even episodes as the test split. Weight changes did not hold up on the test split, so the blend stays at 0.4 rules and 0.6 LLM. The five rule fixes came from the failure analysis below, not from a search. Their effect on the metric is within noise: about 2 clips at recall@10 and none at recall@15. I chose them because they remove a resolved, happy ending from the top 10 and add two strong clips in its place.
+## Where it fails
 
-## Where AI got it wrong
+- **Tender cliffhangers rank low.** A romance beat that cuts just before a kiss ranked 110th of 120: both the rules and the judge look for conflict.
+- **Most picks are flagged for review.** I asked the judge what a stranger would not understand, "or empty". It wrote something for 119 of 120 clips, so most picks show medium confidence. A yes or no field would fix this.
+- **The gold set flatters recall.** 29 of the 31 gold clips came from the tool's own shortlist, and one person checked one AI's labels. An editor choosing freely would be the real test.
+- **Two ideas that did not work.** A judge that also saw the episode summary rated nearly every clip understandable (recall@15 8/31). A learned blend of the scores lost under cross-validation (8/31). Neither is used.
 
-- **Windows encoding.** The first outputs were written in the Windows default encoding, not UTF-8, and later the console crashed printing a non-breaking hyphen from the LLM. Every file read and write now names UTF-8, and the scripts set their console to UTF-8.
-- **Free tier limits.** Gemini's free tier stopped my first LLM run after about 23 calls. The error showed a limit of 20 requests a day for that model. Waiting longer between calls would not help with a daily cap, so I moved the judge to Groq, which allows about 1,000 a day. The full run then cost 133k input and 36k output tokens.
-- **Lexicon gap.** My first conflict word lists came from episodes 1 to 17 and had no fire, explosion, whip or execution words, so the fire, branding iron and witch trial scenes ranked low. I added them. Later I found the cliffhanger score only read the last 6 seconds, so a big beat just before the cut counted for nothing; it now gets credit up to 12 seconds back.
-- **A free-text field became a constant flag.** I asked the judge what a stranger would not understand, "or empty". It wrote something for 119 of 120 clips, so almost every pick was flagged for review. A yes or no field would fix this. That needs new LLM calls, which I did not make.
-- **Tender cliffhangers rank low.** A romance beat that ends before a kiss ranked 110th of 120. Both judges look for conflict, and the rules' "calm ending" words matched a soft delivery note, even though the scene was unresolved. Delivery words no longer count as an ending, but tender clips still rank low.
+## AI tools, and where they got it wrong
 
-## Later attempts that did not work
+I used Claude Code (Claude) to write most of the code with me, to draft the gold labels I then reviewed, and to help write these docs. The judge is Groq's openai/gpt-oss-120b. Gemini was my first judge.
 
-- A second judge prompt that also saw the episode summary rated almost every clip understandable, its scores bunched together, and recall@15 fell to 8/31. Not used.
-- A logistic re-blend learned from the labels lost under episode-grouped cross-validation (recall@15 8/31 against 10/31). Not used.
+- **Lexicon gap.** The first conflict word lists were written from episodes 1 to 17, with no fire, explosion or execution words, so later fire and witch-trial scenes ranked low. The cliffhanger score also read only the last 6 seconds. Both are fixed.
+- **A cost bug.** `--provider none` would still have called the paid model, because a setting in `.env` won. A test now guards against it.
+- **Free tier.** Gemini's free tier stopped my first run after about 23 calls (a limit of 20 a day), so I moved the judge to Groq.
 
-## Limits
+## Scale and cost
 
-The gold set is small. An AI drafted it and I reviewed it, so it reflects one drafter checked by one person, not an editor labelling from scratch. 29 of the 31 gold clips came from the tool's own shortlist, because the review sheet showed the tool's top 3 clips per episode plus 2 random ones. This makes recall look better than it would against an editor's free choice. The rules are written in English for one genre. A text-only judge cannot see visual payoffs such as a costume reveal. A pipeline bug also once let `--provider none` call the paid model; a test now guards against it.
+- **A new show** is a folder of .txt files: one command, or an upload in the app. Rules-only mode takes about 7 seconds for 50 episodes.
+- **LLM cost.** About 2,700 input and 700 output tokens per episode (133k and 36k for 50 episodes), free on Groq's free tier. The run took 26 minutes only because of the free tier's per-minute limit. Each call took about 1.3 seconds, so a paid API would finish in minutes. Answers are cached, and re-ranking from saved scores needs no calls.
+- **Swapping the model** takes three settings (provider, model, base URL). Any OpenAI-compatible API works, and a test runs the whole pipeline against a fake one.
+- **The editor stays in the loop.** They review only the ranked picks and the flags, instead of watching every episode.
+- **Not yet general.** The word lists are English and written for one genre. Other languages need new lists, or more of the judging moved to the model.
 
-## With a stronger model and more time
+## Next, with a stronger model
 
-I would make confusing_for_new_viewer a yes or no field and let a stronger model judge more clips per episode, because nearly every missed gold clip was on the shortlist but ranked low. I would have a real editor label a gold set chosen from the whole episode, not from my shortlist. I would also read cliffhangers from the visual directions as well as the last line. With video access, I would check the cuts against the actual footage.
+Make the confusion field yes or no, and let the model judge more clips per episode, because nearly every missed gold clip was on the shortlist but ranked low. Read cliffhangers from the visual directions as well as the last line. Have an editor build a gold set from whole episodes, and, with video access, check the cuts against the footage.
