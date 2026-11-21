@@ -23,17 +23,9 @@ git push -u origin main
 1. Go to share.streamlit.io and sign in with GitHub.
 2. Click **Create app**, then **Deploy a public app from GitHub**.
 3. Repository: `<your-username>/kuku-promo-finder`. Branch: `main`. Main file path: `app.py`.
-4. Click **Advanced settings**. Python version: 3.12 or newer. In **Secrets**, paste (only if you want the LLM mode online; rules-only needs nothing):
-
-```toml
-PROMO_LLM_PROVIDER = "groq"
-PROMO_LLM_MODEL = "openai/gpt-oss-120b"
-PROMO_LLM_API_KEY = "your-groq-key"
-```
-
-   If you put a key here, anyone with the app link can spend your free daily quota. Leaving Secrets empty keeps the app in rules-only mode by default, and visitors can paste their own key in the sidebar.
+4. Click **Advanced settings**. Python version: 3.12 or newer. Leave **Secrets** empty. The app runs rules-only by default and visitors paste their own key in the sidebar. (Optional: a `PROMO_LLM_API_KEY = "..."` secret becomes the fallback key for any visitor who picks a provider without pasting one, so anyone with the link can spend that quota. The app ignores provider and model secrets; visitors choose those in the sidebar.)
 5. Click **Deploy**. The first build takes a few minutes.
-6. Test it: open the app in a private window, upload two or three episode `.txt` files (or a `.zip`), keep provider `none`, click **Find promos**. You should see the table and the download buttons.
+6. Test it: open the app in a private window, keep **Use the sample show** and provider `none`, click **Find promos**. Then try **Upload my own** with two or three `.txt` files (or a `.zip`). You should see the table and the download buttons.
 
 ## 3. Raw outputs on Google Drive
 
