@@ -1,0 +1,163 @@
+EPISODE NUMBER: Episode 4
+EPISODE LOGLINE: Noor confronts Ines, Abel offers a deal, and a storm drives the Grey Hen back into Saltreach.
+CONTINUITY NOTES: Continues from the radio message. Season break cliffhanger.
+
+--- SCRIPT START ---
+
+SCENE 01
+Scene heading: INT. HARBOUR MASTER'S HUT - NIGHT
+Scene start: 00:00.00
+Scene end: 00:27.70
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:04.60)
+Handheld as Noor bursts in, soaked, Teo behind her.
+
+**CAMERA:**
+Start: (00:04.60) | End: (00:10.10)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Furious):**
+Start: (00:04.80) | End: (00:10.00)
+"He's alive, and he said not to trust you. Start talking."
+
+**CAMERA:**
+Start: (00:10.10) | End: (00:13.10)
+Medium shot holding on the speaker.
+
+**INES COYLE (Pale):**
+Start: (00:10.30) | End: (00:13.00)
+"Teo, go home."
+
+**CAMERA:**
+Start: (00:13.10) | End: (00:16.70)
+Medium shot holding on the speaker.
+
+**TEO COYLE (Defiant):**
+Start: (00:13.30) | End: (00:16.60)
+"No. I want to hear it too."
+
+**CAMERA:**
+Start: (00:16.70) | End: (00:22.80)
+Medium shot holding on the speaker.
+
+**INES COYLE (Cracking):**
+Start: (00:16.90) | End: (00:22.70)
+"Abel paid our debts. All of them. My price was one signature."
+
+**CAMERA:**
+Start: (00:22.80) | End: (00:27.70)
+Wide shot.
+
+**ACTION:**
+Start: (00:23.00) | End: (00:27.60)
+Teo backs away from his mother as if she has struck him.
+
+
+SCENE 02
+Scene heading: INT. BOATYARD OFFICE - NIGHT
+Scene start: 00:27.70
+Scene end: 00:53.10
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:27.70) | End: (00:32.90)
+Abel at his desk, lamp light, the will in a frame on the wall.
+
+**CAMERA:**
+Start: (00:32.90) | End: (00:39.00)
+Medium shot holding on the speaker.
+
+**ABEL VALE (Calm, Dangerous):**
+Start: (00:33.10) | End: (00:38.90)
+"You've been to the rock. Then you know he chose to disappear."
+
+**CAMERA:**
+Start: (00:39.00) | End: (00:43.00)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Steady):**
+Start: (00:39.20) | End: (00:42.90)
+"Or you made him. Which is it?"
+
+**CAMERA:**
+Start: (00:43.00) | End: (00:48.80)
+Medium shot holding on the speaker.
+
+**ABEL VALE (Leaning In):**
+Start: (00:43.20) | End: (00:48.70)
+"Sign the yard over tonight and I'll tell you where he is."
+
+**CAMERA:**
+Start: (00:48.80) | End: (00:53.10)
+Wide shot.
+
+**SOUND FX:**
+Start: (00:49.00) | End: (00:53.00)
+Thunder rolls over the harbour. The window rattles.
+
+
+SCENE 03
+Scene heading: EXT. STONE PIER - NIGHT, STORM
+Scene start: 00:53.10
+Scene end: 01:30.30
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:53.10) | End: (00:59.20)
+Wide in driving rain: the Grey Hen slams against the pier, ropes trailing.
+
+**CAMERA:**
+Start: (00:59.20) | End: (01:05.60)
+Wide shot.
+
+**ACTION:**
+Start: (00:59.40) | End: (01:05.50)
+Noor runs to the boat. The deck is empty except for a yellow coat tangled in the rail.
+
+**CAMERA:**
+Start: (01:05.60) | End: (01:08.00)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Screaming):**
+Start: (01:05.80) | End: (01:07.90)
+"Dad!"
+
+**CAMERA:**
+Start: (01:08.00) | End: (01:12.30)
+Wide shot.
+
+**ACTION:**
+Start: (01:08.20) | End: (01:12.20)
+A hand closes on her shoulder from behind.
+
+**CAMERA:**
+Start: (01:12.30) | End: (01:17.50)
+Medium shot holding on the speaker.
+
+**ELIAS VALE (Hoarse, Grim):**
+Start: (01:12.50) | End: (01:17.40)
+"You were never supposed to come back, Noor."
+
+**CAMERA:**
+Start: (01:17.50) | End: (01:24.20)
+Close-up on Noor turning. Lightning shows her father's face, then Abel's lamp moving down the pier toward them.
+
+**CAMERA:**
+Start: (01:24.20) | End: (01:28.80)
+Medium shot holding on the speaker.
+
+**ABEL VALE (O.S.) (Calling):**
+Start: (01:24.40) | End: (01:28.70)
+"Elias! You promised me she'd sign!"
+
+**CAMERA:**
+Start: (01:28.80) | End: (01:30.30)
+Cut to black.
+
+
+--- SCRIPT END ---

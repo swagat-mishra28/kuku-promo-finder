@@ -1,0 +1,167 @@
+EPISODE NUMBER: Episode 2
+EPISODE LOGLINE: Noor chases the repainted boat and finds an ally in the harbour master, who is hiding something of her own.
+CONTINUITY NOTES: Continues from the boat sighting. Introduces the logbook page.
+
+--- SCRIPT START ---
+
+SCENE 01
+Scene heading: EXT. HARBOUR WALL - DAY
+Scene start: 00:00.00
+Scene end: 00:28.00
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:04.90)
+Tracking shot as Noor runs along the harbour wall after the drifting boat.
+
+**CAMERA:**
+Start: (00:04.90) | End: (00:08.70)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Shouting):**
+Start: (00:05.10) | End: (00:08.60)
+"Stop that boat! Somebody stop it!"
+
+**CAMERA:**
+Start: (00:08.70) | End: (00:13.40)
+Wide shot.
+
+**ACTION:**
+Start: (00:08.90) | End: (00:13.30)
+Harbour master Ines Coyle grabs Noor's arm before she reaches the edge.
+
+**CAMERA:**
+Start: (00:13.40) | End: (00:18.60)
+Medium shot holding on the speaker.
+
+**INES COYLE (Firm):**
+Start: (00:13.60) | End: (00:18.50)
+"You'll go in after it and drown like he did. Stand still."
+
+**CAMERA:**
+Start: (00:18.60) | End: (00:23.30)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Desperate):**
+Start: (00:18.80) | End: (00:23.20)
+"He didn't drown. His boat is right there, Ines."
+
+**CAMERA:**
+Start: (00:23.30) | End: (00:28.00)
+Over Ines's shoulder: the boat slips behind the breakwater and is gone.
+
+
+SCENE 02
+Scene heading: INT. HARBOUR MASTER'S HUT - DAY
+Scene start: 00:28.00
+Scene end: 01:02.20
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:28.00) | End: (00:32.90)
+Close on a kettle and two cracked mugs, charts pinned on every wall.
+
+**CAMERA:**
+Start: (00:32.90) | End: (00:38.10)
+Medium shot holding on the speaker.
+
+**INES COYLE (Careful):**
+Start: (00:33.10) | End: (00:38.00)
+"Abel registered a boat last week. New name, the Grey Hen."
+
+**CAMERA:**
+Start: (00:38.10) | End: (00:43.00)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Cold):**
+Start: (00:38.30) | End: (00:42.90)
+"Registered by the man who now owns everything my father had."
+
+**CAMERA:**
+Start: (00:43.00) | End: (00:48.80)
+Wide shot.
+
+**ACTION:**
+Start: (00:43.20) | End: (00:48.70)
+Ines slides a torn logbook page across the table. Numbers in Elias's handwriting.
+
+**CAMERA:**
+Start: (00:48.80) | End: (00:54.30)
+Medium shot holding on the speaker.
+
+**INES COYLE (Low):**
+Start: (00:49.00) | End: (00:54.20)
+"Your father left this with me the night he went out. Coordinates."
+
+**CAMERA:**
+Start: (00:54.30) | End: (00:58.10)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Suspicious):**
+Start: (00:54.50) | End: (00:58.00)
+"And you kept it for a month. Why?"
+
+**CAMERA:**
+Start: (00:58.10) | End: (01:02.20)
+Ines's face: she looks at the door before she answers.
+
+
+SCENE 03
+Scene heading: EXT. HARBOUR MASTER'S HUT - DUSK
+Scene start: 01:02.20
+Scene end: 01:29.90
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (01:02.20) | End: (01:06.90)
+Wide shot.
+
+**ACTION:**
+Start: (01:02.40) | End: (01:06.80)
+Noor folds the page into her coat and steps out into the wind.
+
+**CAMERA:**
+Start: (01:06.90) | End: (01:11.60)
+Medium shot holding on the speaker.
+
+**INES COYLE (Quiet, Guilty):**
+Start: (01:07.10) | End: (01:11.50)
+"Because I signed his death certificate, Noor."
+
+**CAMERA:**
+Start: (01:11.60) | End: (01:14.60)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Turning):**
+Start: (01:11.80) | End: (01:14.50)
+"You saw his body?"
+
+**CAMERA:**
+Start: (01:14.60) | End: (01:19.80)
+Medium shot holding on the speaker.
+
+**INES COYLE (Barely Audible):**
+Start: (01:14.80) | End: (01:19.70)
+"There was no body. Abel told me what to write."
+
+**CAMERA:**
+Start: (01:19.80) | End: (01:24.70)
+Close-up on Noor as the floodlights of the boatyard switch on behind her.
+
+**CAMERA:**
+Start: (01:24.70) | End: (01:28.50)
+Wide shot.
+
+**SOUND FX:**
+Start: (01:24.90) | End: (01:28.40)
+A metal gate clangs shut somewhere in the yard.
+
+**CAMERA:**
+Start: (01:28.50) | End: (01:29.90)
+Cut to black.
+
+
+--- SCRIPT END ---

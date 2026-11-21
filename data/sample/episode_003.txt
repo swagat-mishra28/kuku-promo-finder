@@ -1,0 +1,147 @@
+EPISODE NUMBER: Episode 3
+EPISODE LOGLINE: Noor and Ines's son Teo take a dinghy to the logbook coordinates at night and find a signal that should not exist.
+CONTINUITY NOTES: Continues from Ines's confession. Teo is Ines's son and a mechanic at the boatyard.
+
+--- SCRIPT START ---
+
+SCENE 01
+Scene heading: EXT. OPEN SEA - NIGHT
+Scene start: 00:00.00
+Scene end: 00:38.20
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:00.00) | End: (00:06.30)
+Wide on a small dinghy in black water, one torch beam sweeping the swell.
+
+**CAMERA:**
+Start: (00:06.30) | End: (00:11.40)
+Medium shot holding on the speaker.
+
+**TEO COYLE (Nervous):**
+Start: (00:06.50) | End: (00:11.30)
+"Abel finds out I took his dinghy, I lose my job."
+
+**CAMERA:**
+Start: (00:11.40) | End: (00:16.10)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Focused):**
+Start: (00:11.60) | End: (00:16.00)
+"Then row faster. We're almost on the numbers."
+
+**CAMERA:**
+Start: (00:16.10) | End: (00:19.90)
+Wide shot.
+
+**SOUND FX:**
+Start: (00:16.30) | End: (00:19.80)
+The engine coughs and dies.
+
+**CAMERA:**
+Start: (00:19.90) | End: (00:26.20)
+Wide shot.
+
+**ACTION:**
+Start: (00:20.10) | End: (00:26.10)
+Teo yanks the starter cord twice. Nothing. The dinghy turns slowly with the current.
+
+**CAMERA:**
+Start: (00:26.20) | End: (00:32.50)
+Low angle from the water: a red flare climbs into the sky a few hundred metres away.
+
+**CAMERA:**
+Start: (00:32.50) | End: (00:38.20)
+Medium shot holding on the speaker.
+
+**TEO COYLE (Stunned):**
+Start: (00:32.70) | End: (00:38.10)
+"That's a distress flare. Out here? There's nothing out here."
+
+
+SCENE 02
+Scene heading: EXT. ROCK STACK - NIGHT
+Scene start: 00:38.20
+Scene end: 01:30.10
+
+Actions and dialogue:
+
+**CAMERA:**
+Start: (00:38.20) | End: (00:45.50)
+Wide shot.
+
+**ACTION:**
+Start: (00:38.40) | End: (00:45.40)
+They paddle by hand to a rock stack. A rusted radio box is bolted to the stone, its light blinking.
+
+**CAMERA:**
+Start: (00:45.50) | End: (00:49.90)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Whispering):**
+Start: (00:45.70) | End: (00:49.80)
+"Someone's been changing the batteries."
+
+**CAMERA:**
+Start: (00:49.90) | End: (00:54.60)
+Insert: a strip of yellow oilskin caught on the box's hinge.
+
+**CAMERA:**
+Start: (00:54.60) | End: (01:00.00)
+Medium shot holding on the speaker.
+
+**TEO COYLE (Uneasy):**
+Start: (00:54.80) | End: (00:59.90)
+"Yellow coat. Like the man you saw on the Grey Hen."
+
+**CAMERA:**
+Start: (01:00.00) | End: (01:03.50)
+Wide shot.
+
+**SOUND FX:**
+Start: (01:00.20) | End: (01:03.40)
+The radio crackles to life.
+
+**CAMERA:**
+Start: (01:03.50) | End: (01:09.80)
+Medium shot holding on the speaker.
+
+**ELIAS VALE (V.O.) (Weak, Over Radio):**
+Start: (01:03.70) | End: (01:09.70)
+"Noor. If you found the box, you came. Listen to me."
+
+**CAMERA:**
+Start: (01:09.80) | End: (01:13.90)
+Medium shot holding on the speaker.
+
+**NOOR VALE (Breaking):**
+Start: (01:10.00) | End: (01:13.80)
+"Dad? Dad, where are you?"
+
+**CAMERA:**
+Start: (01:13.90) | End: (01:19.30)
+Medium shot holding on the speaker.
+
+**ELIAS VALE (V.O.) (Urgent, Over Radio):**
+Start: (01:14.10) | End: (01:19.20)
+"Whatever happens, do not trust Ines Coyle."
+
+**CAMERA:**
+Start: (01:19.30) | End: (01:24.70)
+Slow push in on Teo's face as he hears his mother's name.
+
+**CAMERA:**
+Start: (01:24.70) | End: (01:28.50)
+Wide shot.
+
+**SOUND FX:**
+Start: (01:24.90) | End: (01:28.40)
+Static swallows the signal.
+
+**CAMERA:**
+Start: (01:28.50) | End: (01:30.10)
+Cut to black.
+
+
+--- SCRIPT END ---

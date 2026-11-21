@@ -196,11 +196,14 @@ def why_line(c: Candidate) -> str:
     return ("; ".join(parts) or "solid conflict but no standout hook").capitalize() + "."
 
 
-def run(cfg: dict, episodes_dir: str, out_dir: str, log=print) -> dict:
+def run(cfg: dict, episodes, out_dir: str | None, log=print) -> dict:
+    """episodes: a folder of .txt files, or a list of (file name, bytes) held in memory.
+    out_dir=None writes nothing to disk (the web app)."""
     t0 = time.time()
-    eps_list = load_show(episodes_dir)
+    eps_list = load_show(episodes)
     if not eps_list:
-        raise ValueError(f"No screenplay .txt files found in {episodes_dir}")
+        where = episodes if isinstance(episodes, (str, Path)) else "the upload"
+        raise ValueError(f"No screenplay .txt files found in {where}")
     eps = {e.number: e for e in eps_list}
     log(f"Parsed {len(eps_list)} episodes ({sum(len(e.events) for e in eps_list)} events)")
     warns = [w for e in eps_list for w in e.warnings]
@@ -268,6 +271,9 @@ def run(cfg: dict, episodes_dir: str, out_dir: str, log=print) -> dict:
     if rerank_info:
         meta["rerank"] = rerank_info
     meta["parse_warnings"] = warns
+    if out_dir is None:
+        log(f"Done in {meta['runtime_s']}s")
+        return {"promos": promos, "meta": meta}
     write_outputs(promos, meta, out_dir)
     # Full shortlist (before final ranking) for audit / eval of the judge stage
     sl = [{"rules_score": c.score, "final": c.final, "type": c.kind,
@@ -303,20 +309,27 @@ def promo_record(rank: int, c: Candidate, eps, cfg) -> dict:
     }
 
 
+def promos_csv(promos) -> str:
+    """The editor's CSV as text: one row per promo."""
+    import csv
+    import io
+    buf = io.StringIO()
+    w = csv.writer(buf)
+    w.writerow(["post_rank", "type", "duration_s", "segments", "hook", "cliffhanger", "why_it_works",
+                "final_score", "confidence", "issues"])
+    for p in promos:
+        segs = " + ".join(f"Ep{s['episode']} {s['start_tc']}-{s['end_tc']}" for s in p["segments"])
+        w.writerow([p["post_rank"], p["type"], p["duration_s"], segs, p["hook"], p["cliffhanger"],
+                    p["why_it_works"], p["scores"]["final"], p["qa"]["confidence"], "; ".join(p["qa"]["issues"])])
+    return buf.getvalue()
+
+
 def write_outputs(promos, meta, out_dir):
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     (out / "promos.json").write_text(json.dumps({"meta": meta, "promos": promos}, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    import csv
-    with open(out / "promos.csv", "w", newline="", encoding="utf-8") as fh:
-        w = csv.writer(fh)
-        w.writerow(["post_rank", "type", "duration_s", "segments", "hook", "cliffhanger", "why_it_works",
-                    "final_score", "confidence", "issues"])
-        for p in promos:
-            segs = " + ".join(f"Ep{s['episode']} {s['start_tc']}-{s['end_tc']}" for s in p["segments"])
-            w.writerow([p["post_rank"], p["type"], p["duration_s"], segs, p["hook"], p["cliffhanger"],
-                        p["why_it_works"], p["scores"]["final"], p["qa"]["confidence"], "; ".join(p["qa"]["issues"])])
+    (out / "promos.csv").write_text(promos_csv(promos), encoding="utf-8", newline="")
 
     md = [f"# Promo picks ({meta['model']})", "",
           f"Run {meta['run_at']} on episodes {meta['episodes'][0]}-{meta['episodes'][-1]}. "

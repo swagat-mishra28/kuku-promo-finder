@@ -47,16 +47,26 @@ def _extract_json(text: str) -> dict:
 
 class LLM:
     def __init__(self, cfg: dict):
-        load_dotenv()
-        self.provider = os.getenv("PROMO_LLM_PROVIDER", cfg.get("provider", "none"))
-        self.model = os.getenv("PROMO_LLM_MODEL", cfg.get("model", ""))
-        self.base_url = os.getenv("PROMO_LLM_BASE_URL", cfg.get("base_url", ""))
-        self.api_key = os.getenv(cfg.get("api_key_env", "PROMO_LLM_API_KEY"), "") or os.getenv("PROMO_LLM_API_KEY", "")
+        # from_env=False (the web app) uses only cfg: environment variables are shared by every
+        # visitor of a Streamlit server, so one visitor's key must never be read from there.
+        from_env = cfg.get("from_env", True)
+        if from_env:
+            load_dotenv()
+        env = (lambda k, d: os.getenv(k, d)) if from_env else (lambda k, d: d)
+        self.provider = env("PROMO_LLM_PROVIDER", cfg.get("provider", "none"))
+        self.model = env("PROMO_LLM_MODEL", cfg.get("model", ""))
+        self.base_url = env("PROMO_LLM_BASE_URL", cfg.get("base_url", ""))
+        self.api_key = cfg.get("api_key", "") or (
+            os.getenv(cfg.get("api_key_env", "PROMO_LLM_API_KEY"), "") or os.getenv("PROMO_LLM_API_KEY", "")
+            if from_env else "")
         self.temperature = cfg.get("temperature", 0.2)
         # Optional: low/medium/high for reasoning models (e.g. gpt-oss). Sent only to groq/openai_compatible.
-        self.reasoning_effort = os.getenv("PROMO_LLM_REASONING_EFFORT", cfg.get("reasoning_effort") or "")
+        self.reasoning_effort = env("PROMO_LLM_REASONING_EFFORT", cfg.get("reasoning_effort") or "")
+        # cache=False (the web app) keeps uploaded transcripts off disk.
+        self.use_cache = cfg.get("cache", True)
         self.cache_dir = Path(cfg.get("cache_dir", ".cache/llm"))
-        self.cache_dir.mkdir(parents=True, exist_ok=True)
+        if self.use_cache:
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.min_interval = cfg.get("min_seconds_between_calls", 0.0)  # free-tier rate limits
         self.max_run_tokens = cfg.get("max_run_tokens", 0)  # stop a run before a daily token cap
         self._last = 0.0
@@ -82,7 +92,7 @@ class LLM:
         effort = f"|effort={self.sent_effort}" if self.sent_effort else ""
         key = hashlib.sha256(f"{self.provider}|{self.model}{effort}|{system}|{user}".encode()).hexdigest()[:24]
         path = self.cache_dir / f"{key}.json"
-        if path.exists():
+        if self.use_cache and path.exists():
             self.cache_hits += 1
             return json.loads(path.read_text(encoding="utf-8"))
         err = None
@@ -95,7 +105,8 @@ class LLM:
                 text = self._call(system, user)
                 self.calls += 1
                 out = _extract_json(text)
-                path.write_text(json.dumps(out, indent=2), encoding="utf-8")
+                if self.use_cache:
+                    path.write_text(json.dumps(out, indent=2), encoding="utf-8")
                 return out
             except Exception as e:  # noqa: BLE001
                 err = e

@@ -88,11 +88,17 @@ def _number_from_name(stem: str):
 
 def parse_episode(path: str | Path) -> Episode:
     path = Path(path)
+    return parse_text(path.read_bytes(), path.name, origin=str(path))
+
+
+def parse_text(data: bytes | str, name: str, origin: str = "") -> Episode:
+    """Parse one screenplay held in memory. name is the file name, used for numbers and warnings."""
+    stem = Path(name).stem
     warnings = []
     # utf-8-sig drops a byte-order mark; errors="replace" keeps a bad byte from killing the run.
-    text = path.read_text(encoding="utf-8-sig", errors="replace")
+    text = data.decode("utf-8-sig", errors="replace") if isinstance(data, bytes) else data.lstrip("﻿")
     if "�" in text:
-        warnings.append(f"{path.name}: some bytes were not valid UTF-8 and were replaced")
+        warnings.append(f"{name}: some bytes were not valid UTF-8 and were replaced")
     raw = text.splitlines()
     meta = {"EPISODE NUMBER": "", "EPISODE LOGLINE": "", "CONTINUITY NOTES": ""}
     for line in raw[:15]:
@@ -104,13 +110,13 @@ def parse_episode(path: str | Path) -> Episode:
     if num_m:
         number = int(num_m.group(1))
     else:
-        number = _number_from_name(path.stem)
+        number = _number_from_name(stem)
         if number is None:
             number = 0   # load_show gives it a free number and says so
-            warnings.append(f"{path.name}: no EPISODE NUMBER header and no number in the file name")
+            warnings.append(f"{name}: no EPISODE NUMBER header and no number in the file name")
         else:
-            warnings.append(f"{path.name}: no EPISODE NUMBER header; took episode {number} from the file name")
-    ep = Episode(number, meta["EPISODE LOGLINE"], meta["CONTINUITY NOTES"], path=str(path))
+            warnings.append(f"{name}: no EPISODE NUMBER header; took episode {number} from the file name")
+    ep = Episode(number, meta["EPISODE LOGLINE"], meta["CONTINUITY NOTES"], path=origin or name)
     ep.warnings = warnings
 
     scene, heading = 0, ""
@@ -130,7 +136,7 @@ def parse_episode(path: str | Path) -> Episode:
             tm = TIME_RE.search(raw[j]) if j < n else None
             if not tm:
                 shown = raw[j].strip()[:60] if j < n else "end of file"
-                ep.warnings.append(f"{path.name} line {i + 1}: skipped **{label}** block, "
+                ep.warnings.append(f"{name} line {i + 1}: skipped **{label}** block, "
                                    f"no valid 'Start: (mm:ss) | End: (mm:ss)' line (found: {shown!r})")
             if tm:
                 k = j + 1
@@ -145,10 +151,10 @@ def parse_episode(path: str | Path) -> Episode:
                 start = _secs(tm.group(1), tm.group(2))
                 end = _secs(tm.group(3), tm.group(4))
                 if end < start:
-                    ep.warnings.append(f"{path.name} line {j + 1}: end before start, swapped")
+                    ep.warnings.append(f"{name} line {j + 1}: end before start, swapped")
                     start, end = end, start
                 if not text_lines:
-                    ep.warnings.append(f"{path.name} line {j + 1}: **{label}** block has no text")
+                    ep.warnings.append(f"{name} line {j + 1}: **{label}** block has no text")
                 name, tone, off = _split_label(label)
                 upper = name.upper()
                 if upper in NON_DIALOGUE:
@@ -166,27 +172,32 @@ def parse_episode(path: str | Path) -> Episode:
     for k, e in enumerate(ep.events):
         e.idx = k
     if not ep.events:
-        ep.warnings.append(f"{path.name}: no events found; is this a screenplay in the expected format?")
+        ep.warnings.append(f"{name}: no events found; is this a screenplay in the expected format?")
     return ep
 
 
-def load_show(folder: str | Path) -> list[Episode]:
-    """Parse every .txt in a folder. Never crashes on one bad file; problems go into Episode.warnings."""
-    files = sorted(Path(folder).glob("*.txt"))
+def load_show(source) -> list[Episode]:
+    """Parse a show. source is a folder of .txt files, or a list of (file name, bytes) held in memory.
+
+    Never crashes on one bad file; problems go into Episode.warnings."""
+    if isinstance(source, (str, Path)):
+        items = [(f.name, f) for f in sorted(Path(source).glob("*.txt"))]
+    else:
+        items = sorted(source, key=lambda it: it[0])
     eps, seen = [], {}
-    for f in files:
+    for fname, item in items:
         try:
-            ep = parse_episode(f)
+            ep = parse_episode(item) if isinstance(item, Path) else parse_text(item, fname)
         except Exception as e:  # noqa: BLE001  one unreadable file should not stop the show
-            bad = Episode(0, "", "", path=str(f))
-            bad.warnings.append(f"{f.name}: could not be parsed ({type(e).__name__}: {e}); skipped")
+            bad = Episode(0, "", "", path=fname)
+            bad.warnings.append(f"{fname}: could not be parsed ({type(e).__name__}: {e}); skipped")
             eps.append(bad)
             continue
         if ep.number in seen and ep.number != 0:
-            ep.warnings.append(f"{f.name}: episode {ep.number} already loaded from {seen[ep.number]}; skipped")
+            ep.warnings.append(f"{fname}: episode {ep.number} already loaded from {seen[ep.number]}; skipped")
             ep.events = []
         else:
-            seen[ep.number] = f.name
+            seen[ep.number] = fname
         eps.append(ep)
     # Files without a number get the next free one, after the numbered episodes.
     nxt = max(seen, default=0) + 1
