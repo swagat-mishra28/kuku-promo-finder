@@ -35,6 +35,15 @@ ranking:
   repeat_episode_penalty: 0.05
   fix_cap_resolved: true      # e) calm-flagged ending with LLM cliffhanger_score < 6 ranks below open endings
   resolved_llm_cliff_max: 6
+  learned_blend:
+    enabled: false
+    accepted_by_cv: false
+    features: ["rule_hook", "rule_cliff", "rule_standalone", "finale", "llm_overall", "llm_cliff", "rank_in_episode", "llm_overall_vs_episode"]
+    weights: [-0.0096, 0.4734, 0.129, 0.6712, -0.2825, 0.3539, -0.7807, 0.7419]
+    intercept: -1.3852
+    mean: [0.6181, 0.4464, 0.586, 0.4167, 0.5958, 0.6617, 2.0, 0.0]
+    std: [0.191, 0.1592, 0.1636, 0.493, 0.1128, 0.1976, 1.118, 0.075]
+    note: "logistic re-blend learned by eval/cv_reblend.py; final = sigmoid(w . (x - mean) / std + b)"
 
 # Record of tuning attempts (copied into run_meta.json by --rescore-from). Not used for scoring.
 tuning_log:

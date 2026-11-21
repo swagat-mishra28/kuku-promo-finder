@@ -77,6 +77,11 @@ def set_finals(shortlist: list, cfg) -> None:
     outrank a clip with an open ending."""
     for c in shortlist:
         c.final = round(blended(c, cfg), 4)
+    lb = cfg["ranking"].get("learned_blend") or {}
+    if lb.get("enabled") and all("overall" in c.llm for c in shortlist):
+        from .learned import learned_finals
+        for c, f in zip(shortlist, learned_finals(shortlist, lambda x: blended(x, cfg), lb)):
+            c.final = round(f, 4)
     if cfg["ranking"].get("fix_cap_resolved"):
         open_finals = [c.final for c in shortlist if not resolved_ending(c, cfg)]
         if open_finals:
