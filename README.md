@@ -2,6 +2,8 @@
 
 Kuku AI Generalist assignment, Problem 1. Reads a show's timestamped screenplays and returns a ranked list of 20-60 second promo clips. Each clip opens on a hook, cuts on a cliffhanger, and should make sense to someone who has never seen the show.
 
+**Live app:** https://kuku-promo-finder-awumukf6sgq3evtbmsljth.streamlit.app/ (try the built-in sample show, or upload your own screenplays; rules-only mode needs no key)
+
 ## Run it
 
 ```bash
@@ -22,7 +24,7 @@ Re-rank a finished run without paying for the LLM again: `python run.py --rescor
 
 ## Plug in your own model
 
-Any OpenAI-compatible endpoint works with three lines in `.env` (or Streamlit secrets), plus the key:
+Any OpenAI-compatible endpoint works with three lines in `.env`, plus the key (in the web app, pick the provider and paste the key in the sidebar instead):
 
 ```
 PROMO_LLM_PROVIDER=openai_compatible

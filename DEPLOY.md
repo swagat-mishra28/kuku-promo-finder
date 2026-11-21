@@ -1,6 +1,6 @@
 # Deploy
 
-Nothing has been pushed. Do these steps yourself, in order.
+Done: code pushed to https://github.com/swagat-mishra28/kuku-promo-finder (`main`) and the app is live at https://kuku-promo-finder-awumukf6sgq3evtbmsljth.streamlit.app/. Pushing to `main` redeploys the app. The steps below are how it was set up.
 
 ## 1. Push the code to GitHub
 
