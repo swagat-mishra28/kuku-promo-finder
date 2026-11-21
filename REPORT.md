@@ -59,3 +59,7 @@ Final outputs use the original weights, so "after" equals "before" in outputs/fi
   - **outputs/groq_v1_final:** its QA confidence fields were recomputed at your request before this push (D06). outputs/groq_v1 holds the untouched original.
   - **PROMPTS.md:** one screenplay line in it was replaced with a placeholder (D26).
   - **C: drive:** freed by purging pip's cache, 3.9 GB (D25).
+
+## Round 2 (21 Nov 2026, branch round2)
+
+Tried five rule fixes and a second judge prompt that also sees the episode summary. The rule fixes passed the tune/test check and help slightly on top of v1 (all-episode recall@10 6/31 to 8/31). Judge v2 made the scores bunch together (0 of 86 clips flagged as needing context) and lowered all-episode recall@15 from 10/31 to 8/31, so it was not promoted. The Groq run also stopped at clip 87 of 120 on the rolling tokens-per-day limit. The main result is still outputs/final. Details: REPORT_ROUND2.md.

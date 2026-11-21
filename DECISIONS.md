@@ -79,3 +79,33 @@ Each fix comes from a failure in FAILURES.md, is switched in config.yaml, and wa
 **D31. (e) Resolved endings rank below open endings, kept.** F14: when the rules flag a calm ending and the LLM rates the cliffhanger below 6, the clip's final score is capped just below the lowest open-ended clip. Two judges agreeing that a clip ends settled is a strong signal. Tune: unchanged.
 
 **D32. Test split checked once after all five.** Even episodes: recall@5 3/14 to 4/14, everything else unchanged (recall@15 5/14, precision@15 5/9). All episodes: recall@10 6/31 to 8/31, recall@5 4/31 to 3/31, recall@15 10/31 and precision@15 10/15 unchanged. Not worse on the test split, so all five stay on. The small movement says the remaining misses are not caused by these rule details.
+
+## Round 2, Phase 2: judge v2
+
+**D33. Judge v1 kept as is; v2 added beside it (llm.judge_version).** v1's prompt is unchanged so earlier runs stay reproducible from the cache. v2 starts with a version tag, so its cache keys never collide with v1.
+
+**D34. What v2 changes.** It receives the clip's episode logline and continuity notes, labelled "episode summary" and marked as context the viewer never sees. It says a cliffhanger can be emotional, romantic or visual. It returns needs_prior_context (true/false) and a short context_reason instead of free text. Score fields are the same. QA flags a v2 clip only when needs_prior_context is true. The prompt text uses no show-specific words.
+
+**D35. Token budget.** The first v2 draft was estimated at about 194k tokens, too close to the 200k daily cap. I shortened the instructions and capped the summary at 360 characters, which brought the estimate to about 179k. Camera directions stay in the transcript because v2 needs them to see visual cliffhangers. A guard in judge.py stops the run before 192k tokens, and a 429 or quota error stops it after the first failure. llm.py no longer retries those errors.
+
+**D36. The same 120 clips, judged again.** `run.py --rejudge-from outputs/groq_v1_final` reloads v1's saved shortlist and judges it with v2. Re-running the pipeline would have rebuilt the shortlist with the new rule scores, so v1 and v2 would not be comparable. groq_v2 was run with all Phase 1 fixes off (like groq_v1_final). final_v2 applies the fixes by rescoring groq_v2 with no further calls.
+
+**D37. The run started at 05:35:22 IST**, after Groq's 05:30 reset, as instructed.
+
+## Round 2, Phase 3: random gold set
+
+**D38. 60 clips drawn at random (seed 11) from all 179 distinct moments of the rules-only run.** The pool was rebuilt with the round-1 rules (fixes off), which reproduces exactly 179 moments. The blind sheet showed transcripts only. Whether a clip was shortlisted was saved in a separate file that I opened only after labelling.
+
+**D39. Labels: 13 YES, 27 MAYBE, 20 NO.** About half the clips are the same cuts I labelled in round 1, which I re-judged from the transcript. All 13 YES clips are single stretches and form eval/gold_random.yaml. The file header says the labels are AI-drafted and not from the tool's ranking.
+
+**D40. Scoring against the random set.** Only 60 clips in 41 episodes were labelled, so most picks overlap no labelled clip. Recall is measured end to end: a YES clip the tool did not pick, including one that never reached the shortlist, is a miss. Precision is reported only over picks that overlap a labelled clip ("labelled" in the table), because an unlabelled pick is neither right nor wrong.
+
+**D41. Shortlist coverage.** 12 of the 13 random YES clips were in v1's 120-clip shortlist, against 41 of the 60 random clips overall. So the rule shortlist catches almost every good clip, and most losses happen in ranking.
+
+## Round 2, Phase 4: decision
+
+**D42. Judge v2 is not promoted. v1 stays the main result.** The rule: promote only if the even split does not get worse on recall@15 and precision@15 AND the all-episode numbers improve. Even split: recall@15 5/14 for both, precision@15 5/8 for v2 against 5/9 for v1+fix. All episodes: recall@15 8/31 against 10/31, precision@15 8/15 against 10/15. All-episode numbers got worse, so v2 fails. outputs/final, README, SOLUTION_DOC numbers, INTERVIEW_PREP and raw_outputs_for_drive.zip are left as they were, apart from a short Round 2 paragraph.
+
+**D43. The v2 run is incomplete and I did not resume it.** Groq stopped it at clip 87 on the tokens-per-day limit, and the rule for this round was to stop and report. A comparison on only the 86 clips both prompts judged gives the same numbers as the partial run, because the 34 unjudged clips were v1's lowest-ranked. outputs/final_v2 records unjudged_clips: 34 and the error in its run_meta.json.
+
+**D44. The Phase 1 fixes stay on in config.yaml but are not in the main output.** They passed the tune and test rule and help slightly on top of v1 (outputs/r2_v1fix). The round's instruction was to leave the main files alone if v2 was not promoted, so switching the main result to v1 plus fixes is left to Swagat.

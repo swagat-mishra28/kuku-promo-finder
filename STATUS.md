@@ -4,9 +4,9 @@ Branch: round2 (not pushed). Untouched: outputs/final, outputs/groq_v1_final, ra
 
 | Phase | State | Notes |
 |---|---|---|
-| 1 Rule fixes (no LLM) | done | 5 fixes kept (D27 to D32). Test split not worse. |
-| 2 Judge v2, one Groq run | ready, waiting | prompt v2 + rejudge mode + stop guards committed; estimated ~179k tokens; run starts at 05:35 IST |
-| 3 Random gold set | labels done | 60 random clips labelled blind: 13 YES -> eval/gold_random.yaml |
-| 4 Compare and decide | not started | |
+| 1 Rule fixes (no LLM) | done | 5 fixes kept (D27 to D32), F16 fixed |
+| 2 Judge v2, one Groq run | partial | stopped at clip 87/120 on Groq tokens-per-day limit (rolling window); 122,454 tokens used |
+| 3 Random gold set | done | 13 YES of 60 random clips |
+| 4 Compare and decide | done | v2 not promoted; v1 stays main. REPORT_ROUND2.md written. |
 
-Next: at 05:35 IST run `run.py --provider groq --rejudge-from outputs/groq_v1_final --out outputs/groq_v2` with all fixes OFF, then rescore with fixes ON into outputs/final_v2.
+Next: nothing for Claude. See "What is left for you" in REPORT_ROUND2.md.

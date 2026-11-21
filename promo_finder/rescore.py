@@ -95,6 +95,8 @@ def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_
             "llm_calls": src_meta["llm_calls"],
             "tokens_in": src_meta["tokens_in"],
             "tokens_out": src_meta["tokens_out"],
+            "prompt_version": src_meta.get("prompt_version", "judge-v1"),
+            "stopped_on_error": (src_meta.get("judge_run") or {}).get("stopped_on_error", ""),
         },
         "prompt_version": (judged or {}).get("prompt_version") or src_meta.get("prompt_version", "judge-v1"),
         "config_hash": config_hash(cfg),
@@ -105,6 +107,7 @@ def rescore(cfg: dict, source_run: str, episodes_dir: str, out_dir: str, tuning_
         "llm_calls": llm.calls if llm else 0, "llm_cache_hits": llm.cache_hits if llm else 0,
         "tokens_in": llm.tokens_in if llm else 0, "tokens_out": llm.tokens_out if llm else 0,
         "judge_run": judged,
+        "unjudged_clips": sum(1 for c in shortlist if "overall" not in (c.llm or {})),
         "runtime_s": round(time.time() - t0, 1),
     }
     write_outputs(promos, meta, out_dir)

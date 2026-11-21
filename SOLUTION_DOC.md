@@ -39,6 +39,10 @@ I tuned honestly. Odd episodes were the tune split and even episodes the test sp
 - **A free-text field became a constant flag.** I asked the judge what a stranger would not understand, "or empty". It wrote something for 119 of 120 clips, so almost every pick was flagged for review. A yes or no field would fix this. That needs new LLM calls, which I did not make.
 - **Tender cliffhangers rank low.** A romance beat that ends before a kiss ranked 110th of 120. Both judges look for conflict, and the rules' "calm ending" words matched a smile and a soft delivery, even though the scene was unresolved.
 
+## Round 2
+
+I fixed five rule flaws from the failures above and tried a second judge prompt that also sees the episode summary. The rule fixes helped slightly (all-episode recall@10 from 6/31 to 8/31). The new prompt did not: with the plot in hand the judge rated almost everything understandable, its scores bunched together, and recall@15 fell to 8/31. The run also stopped at clip 87 of 120 on Groq's daily token limit. I kept the original result.
+
 ## Limits
 
 The gold set is small and has one labeller, and that labeller was an AI. 29 of the 31 gold clips came from the tool's own shortlist, because the review sheet showed the tool's top 3 clips per episode plus 2 random ones. This makes recall look better than it would against an editor's free choice. The rules are written in English for one genre. A text-only judge cannot see visual payoffs such as a costume reveal. A pipeline bug also once let `--provider none` call the paid model; a test now guards against it.

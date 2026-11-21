@@ -67,3 +67,19 @@ Why it was wrong: the couple walk out into the sunlight as the episode fades. Th
 **F15. Two halves of one scene count as a miss and a false alarm (gold G01 vs pick #5, Ep 1).**
 What the system did: picked 43.9 to 74.6 s (the accusation scene). The gold clip is 14.3 to 46.8 s (the altar reveal). The LLM rated the gold clip's opening 4 out of 10.
 Why it was wrong, partly: the clips are neighbouring cuts of the same scene and share only 2.9 seconds, so the 50% overlap rule scores one miss and one false alarm. My gold choice here is debatable and is item 5 in labels_to_review.md. The lesson is that recall on a 31-clip gold set moves in large steps when one judgement call flips.
+
+## Round 2 (21 Nov 2026)
+
+**F16. My own fix (c) could never fire.**
+Found: writing its unit test. The test clip's opening action had heat 0.4, under the 0.5 threshold, and the hook did not change. A check over the real screenplays showed 0 of 486 action and sound lines reach 0.5, because they have no tone tag and lose the 0.35 tone part of the heat score. On the tune split the fix looked "neutral" only because it never ran.
+Fixed: threshold set to 0.35, which the strongest 46 of 486 action lines reach (a physical word plus a stakes word or an exclamation). Chosen from the distribution, not from eval scores. The keep rule was re-run with the new value; results were the same.
+
+**F17. What round 2 fixed.**
+Fixed: four rule flaws from F11 to F14 (late big beats ignored, the depth penalty counted twice, strong silent openings cut, soft delivery read as a resolved ending) and resolved endings that could rank in the top 10. On top of v1's saved scores they lift all-episode recall@10 from 6/31 to 8/31 and random-set recall@25 from 5/13 to 6/13, with recall@15 and precision@15 unchanged. The judge now stops after the first 429 or before a token budget instead of retrying, and the free-text context field was replaced by a true/false field.
+
+**F18. What round 2 did not fix.**
+Judge v2 did not beat v1. On all episodes v2 found 8/31 gold clips at recall@15 against 10/31, and 3/13 random gold clips against 5/13. The run also stopped at clip 87 of 120 on Groq's tokens-per-day limit. My plan assumed the limit resets at 05:30 IST. The error showed it is a rolling 24-hour window: 199,530 tokens were counted as used, including part of the previous night's run, even though this run used 122,454. The remaining 34 clips were v1's lowest-ranked, and a comparison on only the 86 judged clips gave the same result, so the stop did not change the verdict.
+
+**F19. New problem: context made the judge less useful.**
+Found: comparing v1 and v2 answers on the same 86 clips. With the episode summary, the judge rated standalone sense 7.8 on average instead of 5.7, overall 7.8 instead of 6.5, and the spread of overall scores halved (standard deviation 0.77 to 0.43). It marked 0 of 86 clips as needing prior context; v1's free-text field was filled for 119 of 120. Telling the judge "the viewer never sees this" was not enough: once it knows the plot, every clip makes sense to it. The scores carry less information, so the blend leans more on the rules.
+Not fixed: a cold-viewer score needs a judge that has not read the summary. A next try would ask two questions in separate calls: one without the summary for hook, cliffhanger and standalone, and one with it only to check facts.
