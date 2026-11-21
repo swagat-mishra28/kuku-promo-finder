@@ -83,3 +83,14 @@ Judge v2 did not beat v1. On all episodes v2 found 8/31 gold clips at recall@15 
 **F19. New problem: context made the judge less useful.**
 Found: comparing v1 and v2 answers on the same 86 clips. With the episode summary, the judge rated standalone sense 7.8 on average instead of 5.7, overall 7.8 instead of 6.5, and the spread of overall scores halved (standard deviation 0.77 to 0.43). It marked 0 of 86 clips as needing prior context; v1's free-text field was filled for 119 of 120. Telling the judge "the viewer never sees this" was not enough: once it knows the plot, every clip makes sense to it. The scores carry less information, so the blend leans more on the rules.
 Not fixed: a cold-viewer score needs a judge that has not read the summary. A next try would ask two questions in separate calls: one without the summary for hook, cliffhanger and standalone, and one with it only to check facts.
+
+## Round 3 (21 Nov 2026)
+
+**F20. The learned re-blend did not beat the hand-set blend.**
+Found: grouped 5-fold cross-validation on the 120 saved clips. The learned weights found 8/31 gold clips at recall@15 against 10/31 for 0.4 rules + 0.6 LLM, with lower precision, and won 1 fold of 5. Two other fold splits gave 7/31.
+Why: 33 positive clips is very little to learn 8 weights from, and the hand-set blend is already close to what the data supports. The learned weights rank deeper in the list better (recall@25 14/31 against 12/31) but put fewer gold clips in the top 15, which is what matters for posting.
+Not adopted: the weights are in config.yaml with enabled: false.
+
+**F21. The first rerank design would have paid twice for the same batches.**
+Found: the cache test. The second run with the same clips made 3 new calls, because clips were shuffled in score order, and any score change produced different batches and different prompts.
+Fixed: clips are sorted by identity (episode and timestamps) before the seeded shuffle. The same clips now always give the same prompts, and the test confirms zero new calls on a repeat.

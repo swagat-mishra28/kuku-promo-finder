@@ -5,5 +5,8 @@ Branch: round3 (from round2, not pushed). No Groq calls this round.
 | Phase | State |
 |---|---|
 | 1 CV re-blend | done: no gain (D45 to D48), weights exported switched off |
-| 2 Listwise rerank (code + fake test) | done: code, 8 tests, dry run, RUN_STAGE2.md (D49 to D53) |
-| 3 Top 10 compare | in progress |
+| 2 Listwise rerank (code + fake test) | done: code, 8 tests, dry run, RUN_STAGE2.md (D49 to D53). Groq run pending after 23:40 IST |
+| 3 Top 10 compare | done: eval/top10_compare.md (git-ignored) |
+| Final | done: 34 tests pass, leak scan clean, REPORT_ROUND3.md |
+
+Next: nothing for Claude. See REPORT_ROUND3.md.
