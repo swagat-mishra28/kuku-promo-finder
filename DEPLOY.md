@@ -29,7 +29,7 @@ git push -u origin main
 
 ## 3. Raw outputs on Google Drive
 
-1. Upload `raw_outputs_for_drive.zip` (project root, about 280 KB) to Google Drive.
+1. Upload `raw_outputs_for_drive.zip` (project root, about 500 KB) to Google Drive.
 2. Right-click, **Share**, then under General access choose **Anyone with the link**, role **Viewer**. Copy the link.
 3. The zip quotes the confidential screenplays. Share the link only in the submission form.
 

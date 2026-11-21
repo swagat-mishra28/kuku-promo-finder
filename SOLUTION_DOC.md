@@ -2,6 +2,9 @@
 
 Swagat Mishra, Kuku AI Generalist assignment, Problem 1
 
+- Code: https://github.com/swagat-mishra28/kuku-promo-finder
+- Live app: https://kuku-promo-finder-awumukf6sgq3evtbmsljth.streamlit.app/ (try the invented sample show, or upload screenplays as .txt files or a .zip; rules-only mode needs no key, and a visitor can paste their own key for an LLM run)
+
 ## Problem and approach
 
 Kuku gave me 50 timestamped screenplays of one microdrama. The task is to find 20 to 60 second clips that work as paid social promos: a hook in the first 3 seconds, a cut on an unresolved moment, and a story a stranger can follow. The tool must rank them and admit where it picks badly.
@@ -20,7 +23,7 @@ I split the work in two. Code does everything that has a right answer: parsing t
 
 ## Results
 
-I graded against a 31-clip gold set covering all 50 episodes. **The gold labels were drafted by AI (Claude) from the transcripts, and my own review is still pending.** [[N labels changed after my review]]
+I graded against a 31-clip gold set covering all 50 episodes. **The gold labels were drafted by AI (Claude) from the transcripts.** I then reviewed every one (the 31 here and the 4 that appear only in the random set below), reading the lines around each cut, and kept all of them with the same start and end. I added no clips.
 
 | Run | recall@5 | recall@10 | recall@15 | recall@25 | precision@15 |
 |---|---|---|---|---|---|
@@ -47,7 +50,7 @@ I tuned honestly, with odd episodes as the tune split and even episodes as the t
 
 ## Limits
 
-The gold set is small and has one labeller, and that labeller was an AI. 29 of the 31 gold clips came from the tool's own shortlist, because the review sheet showed the tool's top 3 clips per episode plus 2 random ones. This makes recall look better than it would against an editor's free choice. The rules are written in English for one genre. A text-only judge cannot see visual payoffs such as a costume reveal. A pipeline bug also once let `--provider none` call the paid model; a test now guards against it.
+The gold set is small. An AI drafted it and I reviewed it, so it reflects one drafter checked by one person, not an editor labelling from scratch. 29 of the 31 gold clips came from the tool's own shortlist, because the review sheet showed the tool's top 3 clips per episode plus 2 random ones. This makes recall look better than it would against an editor's free choice. The rules are written in English for one genre. A text-only judge cannot see visual payoffs such as a costume reveal. A pipeline bug also once let `--provider none` call the paid model; a test now guards against it.
 
 ## With a stronger model and more time
 

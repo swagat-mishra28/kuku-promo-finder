@@ -9,6 +9,7 @@ __pycache__/
 
 # Blind labelling sheet quotes the screenplays
 eval/review_sheet.md
+eval/gold_review_sheet.md
 # Label work files paraphrase or quote the screenplays
 eval/labels_draft.md
 eval/labels_to_review.md
