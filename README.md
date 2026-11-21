@@ -18,7 +18,7 @@ streamlit run app.py                                     # upload a show (.txt f
 
 Run on a new show: `python run.py --episodes path/to/new_show --out outputs/new_show`. Parse problems (bad timing lines, missing headers, gaps in episode numbers) are worked around and printed as warnings, and saved in `run_meta.json`.
 
-Re-rank a finished run without paying for the LLM again: `python run.py --rescore-from outputs/groq_v1_final --out outputs/final`. This reuses the saved LLM scores and applies the current `config.yaml`.
+Re-rank a finished run without paying for the LLM again: `python run.py --rescore-from outputs/groq_v1_final --out outputs/final_main`. This reuses the saved LLM scores and applies the current `config.yaml`.
 
 ## Plug in your own model
 
@@ -51,10 +51,13 @@ Graded against a 31-clip gold set covering all 50 episodes (see SOLUTION_DOC.md 
 
 | Run | recall@5 | recall@10 | recall@15 | recall@25 | precision@15 |
 |---|---|---|---|---|---|
-| Rules only | 6% | 13% | 19% | 26% | 40% |
-| Rules + Groq gpt-oss-120b | 13% | 19% | 32% | 39% | 67% |
+| Rules only (current rules) | 2/31 | 5/31 | 7/31 | 10/31 | 7/15 |
+| v1: rules + Groq gpt-oss-120b, original rules (baseline, outputs/final) | 4/31 | 6/31 | 10/31 | 12/31 | 10/15 |
+| **Main: v1 + five rule fixes (outputs/final_main)** | **3/31** | **8/31** | **10/31** | **12/31** | **10/15** |
 
-The final list has 25 picks for 31 gold clips, so the best possible recall@15 is 48%.
+The final list has 25 picks for 31 gold clips, so the best possible recall@15 is 48%. One clip is about 3 points, so the difference between v1 and the main result is within noise. The main result was chosen because its top 10 drops a happy ending and adds two strong clips (see SOLUTION_DOC.md). A second, random 13-clip gold set gives the main result 5/13 at recall@15 (v1 also 5/13).
+
+`outputs/final_main` is re-ranked from the saved LLM scores of the full Groq run (20 Nov 2026, 23:11 to 23:37), with no new LLM calls. Its `run_meta.json` records the source run, config hash and tuning notes.
 
 ## Outputs (`outputs/<run>/`)
 
@@ -70,7 +73,7 @@ pip install -r requirements-dev.txt
 pytest -q
 ```
 
-15 tests on invented sample screenplays: parser counts, cut rules, cold-open gap rule, evaluation overlap math, QA flags, malformed input, the provider swap, and a regression test that `--provider none` never calls a model.
+34 tests on invented sample screenplays: parser counts, cut rules, cold-open gap rule, evaluation overlap math, QA flags, malformed input, the provider swap, each of the five rule fixes, judge v2 parsing, stop-on-429 and token-budget guards, the optional rerank stage against a fake server, and a regression test that `--provider none` never calls a model.
 
 ## Layout
 
@@ -82,6 +85,8 @@ promo_finder/llm.py         provider-agnostic JSON completion with disk cache
 promo_finder/judge.py       LLM judge prompt
 promo_finder/pipeline.py    orchestration, dedupe, ranking, QA, outputs
 promo_finder/rescore.py     re-rank saved scores with no LLM calls
+promo_finder/rerank.py      optional listwise second stage (off by default, see RUN_STAGE2.md)
+promo_finder/learned.py     optional learned re-blend (off: cross-validation showed no gain)
 eval/                       gold set, evaluator, review sheet builder
 tests/                      pytest suite (invented data only)
 config.yaml                 every weight and threshold

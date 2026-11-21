@@ -1,6 +1,6 @@
 # Interview prep
 
-Short, honest answers. Numbers come from outputs/final and eval/reports.
+Short, honest answers. Numbers come from outputs/final_main (the main result) and outputs/final (the v1 baseline).
 
 ## 20 likely questions
 
@@ -8,7 +8,7 @@ Short, honest answers. Numbers come from outputs/final and eval/reports.
 Most of the job has a right answer: timestamps, shot boundaries, never cutting mid-line, 20 to 60 seconds. Code gets that right every time, for free. Taste is the only part that needs a model, so the LLM sees about 2.4 clips per episode instead of 13,000 cuts.
 
 **2. Why blend 0.4 rules and 0.6 LLM?**
-The LLM is the better judge: precision@15 is 67% for the blend against 40% for rules alone. The rules still catch things the LLM ignores, such as a mid-sentence opening or an episode's own written cliffhanger. I tested 0.7 on the tune split. It did not help the test split, so I kept 0.6.
+The LLM is the better judge: precision@15 is 10/15 for the blend against 7/15 for rules alone. The rules still catch things the LLM ignores, such as a mid-sentence opening or an episode's own written cliffhanger. I tested 0.7 on the tune split. It did not help the test split, so I kept 0.6. A learned logistic blend also lost under episode-grouped cross-validation (8/31 against 10/31 at recall@15).
 
 **3. How did you build the gold set?**
 I built a blind review sheet: the tool's top 3 clips per episode plus 2 random cuts, sorted by time, with no scores shown. Claude labelled all 207 clips from the transcripts and picked 31 YES clips, at most one per episode except episode 3. I am reviewing the 12 least certain labels.
@@ -17,10 +17,10 @@ I built a blind review sheet: the tool's top 3 clips per episode plus 2 random c
 One labeller, and an AI. 29 of the 31 gold clips came from the tool's own shortlist, so recall is flattered. 31 clips is small, so one judgement call moves recall by about 3 points.
 
 **5. What are the headline numbers?**
-Recall@15 32%, precision@15 67%, against a maximum possible recall@15 of 48%, since the list has 25 picks for 31 gold clips. Rules alone: 19% and 40%.
+Main result: recall@15 10/31 (32%), precision@15 10/15 (67%), recall@10 8/31, against a maximum possible recall@15 of 48% (25 picks, 31 gold clips). Rules alone: 7/31 and 7/15. On a random 13-clip gold set: 5/13 at recall@15.
 
 **6. Did tuning help?**
-No. Nine single changes on odd episodes. Only an LLM weight of 0.7 helped there, and it did not help on even episodes, so I reverted it. Most missed gold clips sit at ranks 33 to 104 of 120, too low for weight tweaks to rescue.
+Weight tuning, no: nine single changes on odd episodes, and the one that helped there did not hold on even episodes. Five rule fixes from the failure analysis, yes, but modestly: recall@10 6/31 to 8/31, recall@15 unchanged, which is within noise. I adopted them because the top 10 loses a happy ending and gains two strong clips. A second judge prompt with the episode summary made things worse (8/31), because the judge found every clip understandable once it knew the plot.
 
 **7. What happens with a stronger model?**
 Change three settings: provider, model, base URL. The rules shortlist stays the same, so the stronger model only re-judges about 120 clips. The biggest gain would come from letting it judge more clips per episode, because the misses were on the shortlist but ranked low.
@@ -69,6 +69,6 @@ Be ready to answer this in your own words. Name the decisions you made (code-fir
 - **0:00 to 0:20** Problem. "Kuku gave me 50 microdrama screenplays. I need 20 to 60 second promos with a hook, a cliffhanger, and a story a stranger can follow."
 - **0:20 to 0:50** Approach. Show the pipeline table in README. "Code handles timestamps and legal cuts. The LLM only judges taste, on about 2.4 clips per episode."
 - **0:50 to 1:30** Demo. Open the Streamlit app, upload a zip of three episodes, keep provider none, click Find promos. Point out the parse warnings box, a high-confidence pick, its hook, its cliffhanger and transcript.
-- **1:30 to 2:00** Results. Show the results table. "The LLM judge raises precision@15 from 40% to 67%. I tuned on odd episodes and tested on even ones, and reverted the one change that did not hold up."
+- **1:30 to 2:00** Results. Show the results table. "The LLM judge raises precision@15 from 7 to 10 of 15. Five rule fixes from the failure analysis clean up the top 10. Two ideas that failed, a judge that saw the plot and a learned blend, are in the report."
 - **2:00 to 2:35** Failures. Show FAILURES.md. "Tender cliffhangers and visual payoffs rank low. A free-text field flagged 119 of 120 clips. Gemini's free tier stopped my first run, so I moved to Groq."
 - **2:35 to 3:00** Swap and next steps. Show the three .env lines. "With Kuku's API this is a config change. Next I would make the confusion field yes or no, judge more clips per episode, and get an editor's gold set."

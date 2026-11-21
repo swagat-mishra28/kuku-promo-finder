@@ -58,6 +58,9 @@ rerank:
 # Record of tuning attempts (copied into run_meta.json by --rescore-from). Not used for scoring.
 tuning_log:
   - "2026-11-21: tried ranking.llm_weight 0.6 -> 0.7 on the tune split (odd episodes). Tune recall@5 3->4 and recall@10 6->7; recall@15 and precision@15 unchanged. Test split (even episodes): recall unchanged at every k, precision@15 fell from 5/9 to 5/10. Reverted. No tuning change is active."
+  - "2026-11-21 round 2: five rule fixes from the failure analysis (late-window cliff credit, depth penalty counted once, no hook cut for a strong silent action opening, delivery words in tone tags not read as a resolved ending, resolved endings ranked below open endings). Kept on the tune split, test split not worse. Adopted as the main result: all-episode recall@10 6/31 -> 8/31, recall@15 10/31 and precision@15 10/15 unchanged."
+  - "2026-11-21 round 2: judge prompt v2 (episode summary as context, needs_prior_context flag) not adopted: all-episode recall@15 10/31 -> 8/31; run stopped at clip 87/120 on Groq's token limit."
+  - "2026-11-21 round 3: cross-validated logistic re-blend not adopted: grouped 5-fold CV recall@15 8/31 vs 10/31, won 1 of 5 folds. Weights kept in ranking.learned_blend, switched off."
   - "2026-11-21: also tried on tune only, not applied: episode_depth_penalty 0.003 and 0, finale_bonus 0.30, llm_weight 0.5, early_episode_bonus 0.03 and 0, repeat_episode_penalty 0.10, removing delivery words (soft, gentle, tender, warm) from the calm-ending list. None beat the baseline on recall@15."
 
 qa:
@@ -74,7 +77,7 @@ llm:
   api_key_env: PROMO_LLM_API_KEY
   base_url: ""                # only for openai_compatible / self-hosted endpoints
   temperature: 0.2
-  judge_version: v2          # v1 = transcript only; v2 = adds episode summary and needs_prior_context
+  judge_version: v1          # v1 = transcript only (main result). v2 (adds episode summary) was tried and not adopted
   reasoning_effort: low       # low | medium | high | "" (unset). Sent only for groq / openai_compatible
   max_run_tokens: 192000      # judge stops before Groq's 200k daily cap
   min_seconds_between_calls: 13 # Groq free tier: ~8k tokens/min at ~1.6k tokens per judge call

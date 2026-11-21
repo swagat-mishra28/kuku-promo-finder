@@ -1,12 +1,9 @@
-# Round 3 status
+# Status
 
-Branch: round3 (from round2, not pushed). No Groq calls this round.
+Branch: main (round2 and round3 merged, not pushed).
 
-| Phase | State |
-|---|---|
-| 1 CV re-blend | done: no gain (D45 to D48), weights exported switched off |
-| 2 Listwise rerank (code + fake test) | done: code, 8 tests, dry run, RUN_STAGE2.md (D49 to D53). Groq run pending after 23:40 IST |
-| 3 Top 10 compare | done: eval/top10_compare.md (git-ignored) |
-| Final | done: 34 tests pass, leak scan clean, REPORT_ROUND3.md |
+Main result: outputs/final_main (v1 LLM scores + five rule fixes). Baseline: outputs/final, outputs/groq_v1_final.
 
-Next: nothing for Claude. See REPORT_ROUND3.md.
+Done: config defaults, final_main, tests (34 pass), leak scan, README, SOLUTION_DOC and PDF (2 pages), INTERVIEW_PREP, zip rebuilt.
+
+Left for Swagat: see REPORT_ROUND3.md "What is left for you" (labels review, own-words rewrite, push, deploy, Drive, form). Optional: rerank run per RUN_STAGE2.md after 23:40 IST.

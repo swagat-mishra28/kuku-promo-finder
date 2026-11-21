@@ -131,3 +131,15 @@ Each fix comes from a failure in FAILURES.md, is switched in config.yaml, and wa
 **D52. Failure handling.** A clip missing from a reply, an unknown or repeated id, or a reply without a ranking list scores neutral (0.5) and is logged. A reply that is not JSON at all scores the batch neutral. A 429 or quota error stops the stage after one call and keeps the blend order. All of these are covered by tests against a fake OpenAI-compatible server.
 
 **D53. Token estimate about 26k, measured, not guessed.** A dry run of the exact command against a local fake server sent 6 prompts of 10.9k to 12.7k characters (about 21k input tokens). The run is documented in RUN_STAGE2.md, with --no-fixes (added; reproduces outputs/final exactly) for groq_v3 and --rerank-saved (re-applies saved scores, no calls) for final_v3.
+
+## Adopting the main result (21 Nov 2026)
+
+**D54. Main result is v1 plus the five round-2 rule fixes (outputs/final_main).** Swagat's call after comparing the top 10 lists by eye. The metric change is within noise (all-episode recall@10 6/31 to 8/31, recall@5 4/31 to 3/31, recall@15 10/31 and precision@15 10/15 unchanged). The reason is the top 10: it drops a happy, resolved ending (episode 4) and adds two strong clips (episodes 36 and 16). outputs/final_main matches outputs/r2_v1fix exactly (same picks, order and scores). outputs/final and outputs/groq_v1_final stay as the baseline.
+
+**D55. Branches.** The default branch was called master. It was renamed to main (DEPLOY.md already did this at push time) and fast-forwarded to round3, which contains round2. No merge commits were needed because history is linear.
+
+**D56. judge_version set back to v1 by default.** v2 was tried and not adopted. The main result uses v1 scores, so new runs should use the same prompt. The five fixes stay on by default; the learned blend and the rerank stage stay off. config.yaml tuning_log records all round 2 and 3 outcomes and is copied into run_meta.json.
+
+**D57. Zip rebuilt.** raw_outputs_for_drive.zip now holds outputs/final_main (main), outputs/final and outputs/groq_v1_final (baseline), round2/groq_v2 and round2/final_v2 (judge v2 attempt), round3/cv_reblend_report.md (CV attempt), and a README.txt listing each. outputs/r2_v1fix is left out because it is identical to final_main. The round-3 rerank dry run is left out because its rankings came from a fake server.
+
+**D58. No test changes were needed.** Every test that depends on a fix, the rerank stage or the learned blend sets its switch explicitly, so the new defaults did not break any. 34 passed.

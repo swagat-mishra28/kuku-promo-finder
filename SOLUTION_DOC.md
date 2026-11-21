@@ -24,24 +24,26 @@ I graded against a 31-clip gold set covering all 50 episodes. **The gold labels 
 
 | Run | recall@5 | recall@10 | recall@15 | recall@25 | precision@15 |
 |---|---|---|---|---|---|
-| Rules only | 6% | 13% | 19% | 26% | 40% |
-| Rules + LLM judge | 13% | 19% | 32% | 39% | 67% |
+| Rules only | 2/31 | 5/31 | 7/31 | 10/31 | 7/15 |
+| LLM judge, original rules (v1) | 4/31 | 6/31 | 10/31 | 12/31 | 10/15 |
+| LLM judge + five rule fixes (main result) | 3/31 | 8/31 | 10/31 | 12/31 | 10/15 |
 
-The list holds 25 picks for 31 gold clips, so the best possible recall@15 is 48%. The LLM roughly doubles precision. Two of every three clips in its top 15 are ones the gold set also chose.
+The list holds 25 picks for 31 gold clips, so the best possible recall@15 is 48%. One clip is about 3 points. Two of every three clips in the top 15 are ones the gold set also chose. On a second gold set of 13 YES clips drawn at random from all candidate moments, the main result finds 5 at recall@15.
 
-I tuned honestly. Odd episodes were the tune split and even episodes the test split. I tried nine single changes on the tune split. Only raising the LLM weight from 0.6 to 0.7 helped, at recall@5 and recall@10. On the test split it changed nothing and precision@15 fell from 5/9 to 5/10, so I reverted it. The final output uses the original weights. Tune split recall@15 is 41% (7/17); test split recall@15 is 36% (5/14).
+I tuned honestly, with odd episodes as the tune split and even episodes as the test split. Weight changes did not hold up on the test split, so the blend stays at 0.4 rules and 0.6 LLM. The five rule fixes came from the failure analysis below, not from a search. Their effect on the metric is within noise: about 2 clips at recall@10 and none at recall@15. I chose them because they remove a resolved, happy ending from the top 10 and add two strong clips in its place.
 
 ## Where AI got it wrong
 
 - **Windows encoding.** The first outputs were written in the Windows default encoding, not UTF-8, and later the console crashed printing a non-breaking hyphen from the LLM. Every file read and write now names UTF-8, and the scripts set their console to UTF-8.
 - **Free tier limits.** Gemini's free tier stopped my first LLM run after about 23 calls. The error showed a limit of 20 requests a day for that model. Waiting longer between calls would not help with a daily cap, so I moved the judge to Groq, which allows about 1,000 a day. The full run then cost 133k input and 36k output tokens.
-- **Lexicon gap.** My first conflict word lists came from episodes 1 to 17 and had no fire, explosion, whip or execution words, so the fire, branding iron and witch trial scenes ranked low. I added them. Even now one explosion in the middle of a clip barely moves the score, because the cliffhanger score only reads the last 6 seconds.
+- **Lexicon gap.** My first conflict word lists came from episodes 1 to 17 and had no fire, explosion, whip or execution words, so the fire, branding iron and witch trial scenes ranked low. I added them. Later I found the cliffhanger score only read the last 6 seconds, so a big beat just before the cut counted for nothing; it now gets credit up to 12 seconds back.
 - **A free-text field became a constant flag.** I asked the judge what a stranger would not understand, "or empty". It wrote something for 119 of 120 clips, so almost every pick was flagged for review. A yes or no field would fix this. That needs new LLM calls, which I did not make.
-- **Tender cliffhangers rank low.** A romance beat that ends before a kiss ranked 110th of 120. Both judges look for conflict, and the rules' "calm ending" words matched a smile and a soft delivery, even though the scene was unresolved.
+- **Tender cliffhangers rank low.** A romance beat that ends before a kiss ranked 110th of 120. Both judges look for conflict, and the rules' "calm ending" words matched a soft delivery note, even though the scene was unresolved. Delivery words no longer count as an ending, but tender clips still rank low.
 
-## Round 2
+## Later attempts that did not work
 
-I fixed five rule flaws from the failures above and tried a second judge prompt that also sees the episode summary. The rule fixes helped slightly (all-episode recall@10 from 6/31 to 8/31). The new prompt did not: with the plot in hand the judge rated almost everything understandable, its scores bunched together, and recall@15 fell to 8/31. The run also stopped at clip 87 of 120 on Groq's daily token limit. I kept the original result.
+- A second judge prompt that also saw the episode summary rated almost every clip understandable, its scores bunched together, and recall@15 fell to 8/31. Not used.
+- A logistic re-blend learned from the labels lost under episode-grouped cross-validation (recall@15 8/31 against 10/31). Not used.
 
 ## Limits
 
